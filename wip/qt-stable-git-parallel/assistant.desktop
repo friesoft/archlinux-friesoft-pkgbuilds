@@ -1,0 +1,9 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Exec=/opt/qt-stable-git-full/bin/assistant
+Name=Qt Assistant
+GenericName=Qt Document Browser
+Icon=/opt/qt-stable-git-full/share/pixmaps/assistant.png
+Terminal=false
+Type=Application
+Categories=Qt;Development;Documentation

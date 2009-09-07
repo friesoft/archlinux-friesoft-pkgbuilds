@@ -1,0 +1,10 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Exec=/opt/qt-experimental/kinetic/bin/linguist
+Name=Qt Linguist Kinetic
+GenericName=Translation Tool
+MimeType=application/x-linguist
+Terminal=false
+Type=Application
+Icon=/opt/qt-experimental/kinetic/share/pixmaps/linguist.png
+Categories=Qt;Development;Translation

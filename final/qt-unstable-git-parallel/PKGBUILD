@@ -1,0 +1,122 @@
+# $Id$
+# Contributor: friesoft <friesoft@gmail.com>
+# This package provides the master-stable branch of Qt to be installed in parallel to existing Qt installations
+
+pkgname=qt-unstable-git-parallel
+pkgver=20090905
+pkgrel=1
+pkgdesc="The C++ Qt GUI framework - current development snapshot (master-stable branch) - for parallel installation"
+arch=('i686' 'x86_64')
+url="http://www.qtsoftware.com"
+license=('GPL3' 'LGPL')
+
+depends=('libpng' 'mesa' 'fontconfig' 'libtiff' 'libmng' 'sqlite3' 'libxrandr' 'glib2' 'libxi' 'dbus' 'libxcursor' 'libxinerama' 'libxrender')
+optdepends=('postgresql-libs' 'libmysqlclient' 'unixodbc')
+makedepends=('inputproto' 'postgresql-libs' 'mysql' 'unixodbc' 'cups' 'libxfixes' 'gtk2')
+provides=('qt-unstable-git-parallel')
+options=('!libtool' 'docs')
+
+# desktop files and qdoc3 patch -- needed for qtdesigner-git build
+source=('assistant.desktop' 'designer.desktop' 'linguist.desktop' 'qtconfig.desktop' 'qdoc3.patch')
+
+md5sums=('5d27fe54268bca5e3525fd560e2ba200'
+        'f6e7604748d1eae155cfb08f6464e720'
+        'd94a1216b19995a6ae3ecef2b690cd6d'
+        '65108bc0461b389b3671c2debd30ad99'
+        '9c0a0db3569e889a54a6cddcd55c538c')
+
+_gitroot="git://gitorious.org/qt/qt.git"
+_gitname="qt"
+
+build() {
+          msg "Connecting to git server...."
+
+          if [ -d ${srcdir}/$_gitname ] ; then
+                    cd $_gitname && git pull git://gitorious.org/qt/qt.git master-stable
+                    msg "The local files have been updated to the current revision"
+
+                    cd $srcdir/$_gitname
+          else
+                    git clone $_gitroot
+
+                    cd $srcdir/$_gitname
+
+                    # branch: master-stable (master branch which should always compile)
+                    git checkout -b master-stable
+
+                    # apply qdoc3 patch
+                    patch -p0 -i $srcdir/qdoc3.patch
+
+                    sed -i "s|-O2|$CXXFLAGS|" mkspecs/common/g++.conf
+                    sed -i "/^QMAKE_RPATH/s| -Wl,-rpath,||g" mkspecs/common/g++.conf
+          fi
+
+          unset QMAKESPEC
+          export QT4DIR=$srcdir/$_gitname
+          export PATH=${QT4DIR}/bin:${PATH}
+          export LD_LIBRARY_PATH=${QT4DIR}/lib:${LD_LIBRARY_PATH}
+
+          ./configure -confirm-license -opensource \
+                    -prefix /opt/qt-unstable \
+                    -sysconfdir /etc \
+                    -plugindir /opt/qt-unstable/lib/plugins \
+                    -translationdir /opt/qt-unstable/share/translations \
+                    -datadir /opt/qt-unstable/share \
+                    -docdir /opt/qt-unstable/share/doc \
+                    -examplesdir /opt/qt-unstable/share/doc/examples \
+                    -demosdir /opt/qt-unstable/share/doc/demos \
+                    -largefile \
+                    -plugin-sql-{psql,mysql,sqlite,odbc} \
+                    -system-sqlite \
+                    -xmlpatterns \
+                    -no-phonon \
+                    -svg \
+                    -webkit \
+                    -scripttools \
+                    -system-zlib \
+                    -system-libtiff \
+                    -system-libpng \
+                    -system-libmng \
+                    -system-libjpeg \
+                   # -openssl-linked \          # causes build errors
+                    -optimized-qmake \
+                    -dbus-linked \
+                    -reduce-relocations \
+                    -no-separate-debug-info \
+                    -gtkstyle \
+                    -opengl \
+                    -glib \
+                    -cups \
+                    -iconv \
+                    -xinerama \
+                    -xcursor \
+                    -xfixes \
+                    -qdbus
+
+          # build qt master
+          make || return 1
+          make docs
+
+          #install everything
+          make INSTALL_ROOT=$pkgdir install
+
+          install -D -m644 tools/assistant/tools/assistant/images/assistant.png ${pkgdir}/opt/qt-unstable/share/pixmaps/assistant.png
+          install -D -m644 tools/linguist/linguist/images/appicon.png ${pkgdir}/opt/qt-unstable/share/pixmaps/linguist.png
+          install -D -m644 tools/designer/src/designer/images/designer.png ${pkgdir}/opt/qt-unstable/share/pixmaps/designer.png
+          install -D -m644 src/gui/dialogs/images/qtlogo-64.png ${pkgdir}/opt/qt-unstable/share/pixmaps/qtlogo.png
+          install -d ${pkgdir}/opt/qt-unstable/share/applications
+          install -m644 ${srcdir}/{linguist,designer,assistant,qtconfig}.desktop ${pkgdir}/opt/qt-unstable/share/applications/
+          install -D -m644 LGPL_EXCEPTION.txt ${pkgdir}/opt/qt-unstable/share/licenses/LGPL_EXCEPTION.txt
+
+          install -d ${pkgdir}/opt/qt-unstable/share/doc
+          cp -r doc/html ${pkgdir}/opt/qt-unstable/share/doc
+          cp -r doc/qch ${pkgdir}/opt/qt-unstable/share/doc
+          cp -r doc/src ${pkgdir}/opt/qt-unstable/share/doc
+
+          # cleanup and path fixes
+          find $pkgdir/opt/qt-unstable/lib -type f -name '*prl' -print -exec sed -i -e "/^QMAKE_PRL_BUILD_DIR/d" {} \;
+          sed -i -e "s|-L$srcdir/${_pkgfqn}/lib||g" $pkgdir/opt/qt-unstable/lib/pkgconfig/*.pc
+          sed -i -e "s|$srcdir/${_pkgfqn}/bin/moc|/opt/qt-unstable/bin/moc|g" $pkgdir/opt/qt-unstable/lib/pkgconfig/*.pc
+          sed -i -e "s|$srcdir/${_pkgfqn}/bin/uic|/opt/qt-unstable/bin/uic|g" $pkgdir/opt/qt-unstable/lib/pkgconfig/*.pc
+}
+

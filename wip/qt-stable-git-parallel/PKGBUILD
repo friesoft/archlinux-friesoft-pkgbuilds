@@ -1,0 +1,121 @@
+# $Id$
+# Contributor: friesoft <friesoft@gmail.com>
+# This Qt package is installed in non standard paths so it can be installed in
+# parallel to your current version
+
+pkgname=qt-stable-git-full-parallel
+pkgver=20090813
+pkgrel=1
+_pkgver=4.5
+pkgdesc="The C++ Qt GUI framework - current development snapshot"
+arch=('i686' 'x86_64')
+url="http://www.qtsoftware.com"
+license=('GPL3' 'LGPL')
+
+depends=('libpng' 'mesa' 'fontconfig' 'libtiff' 'libmng' 'sqlite3' 'libxrandr' 'glib2' 'libxi' 'dbus' 'libxcursor' 'libxinerama' 'libxrender')
+optdepends=('postgresql-libs' 'libmysqlclient' 'unixodbc')
+makedepends=('inputproto' 'postgresql-libs' 'mysql' 'unixodbc' 'cups' 'libxfixes' 'gtk2')
+provides=('qt=4.5.3' 'qt4' 'qt4-doc')
+replaces=('qt-stable-git-full-parallel')
+conflicts=('qt-stable-git-full-parallel')
+options=('!libtool' 'docs')
+md5sums=('f11d6cde770349f4dce6590a89a28fe7'
+         '175d0abfff870af365833b4fa580b096'
+         '5c95ee417ef52a3dbdf87dc99e7a92bc'
+         '80125d3fdbe834282f3bf7f03796bc2d'
+         '9c0a0db3569e889a54a6cddcd55c538c')
+# desktop files and qdoc3 patch -- needed for qtdesigner-git build
+source=('assistant.desktop' 'designer.desktop' 'linguist.desktop' 'qtconfig.desktop' 'qdoc3.patch')
+
+_gitroot="git://gitorious.org/qt/qt.git"
+_gitname="qt"
+
+build() {
+          msg "Connecting to git server...."
+
+          if [ -d ${srcdir}/$_gitname ] ; then
+                    cd $_gitname && git pull git://gitorious.org/qt/qt.git 4.5
+                    msg "The local files have been updated to the current revision"
+
+                    cd $srcdir/$_gitname
+          else
+                    git clone $_gitroot
+
+                    cd $srcdir/$_gitname
+                    git checkout remotes/origin/4.5
+
+                    # apply qdoc3 patch
+                    patch -p0 -i $srcdir/qdoc3.patch
+
+                    sed -i "s|-O2|$CXXFLAGS|" mkspecs/common/g++.conf
+                    sed -i "/^QMAKE_RPATH/s| -Wl,-rpath,||g" mkspecs/common/g++.conf
+          fi
+
+          unset QMAKESPEC
+          export QT4DIR=$srcdir/$_gitname
+          export PATH=${QT4DIR}/bin:${PATH}
+          export LD_LIBRARY_PATH=${QT4DIR}/lib:${LD_LIBRARY_PATH}
+
+          _pkgdir=$pkgdir/opt/qt-stable-git-full
+
+          ./configure -confirm-license -opensource \
+                    -prefix ${_pkgdir} \
+                    -sysconfdir /etc \
+                    -plugindir ${_pkgdir}/lib/qt/plugins \
+                    -translationdir ${_pkgdir}/share/qt/translations \
+                    -datadir ${_pkgdir}/share/qt \
+                    -docdir ${_pkgdir}/share/doc/qt \
+                    -examplesdir ${_pkgdir}/share/doc/qt/examples \
+                    -demosdir ${_pkgdir}/share/doc/qt/demos \
+                    -largefile \
+                    -plugin-sql-{psql,mysql,sqlite,odbc} \
+                    -system-sqlite \
+                    -xmlpatterns \
+                    -no-phonon \
+                    -svg \
+                    -webkit \
+                    -scripttools \
+                    -system-zlib \
+                    -system-libtiff \
+                    -system-libpng \
+                    -system-libmng \
+                    -system-libjpeg \
+                    -openssl-linked \
+                    -optimized-qmake \
+                    -dbus-linked \
+                    -reduce-relocations \
+                    -no-separate-debug-info \
+                    -gtkstyle \
+                    -opengl \
+                    -glib \
+                    -cups \
+                    -iconv \
+                    -xinerama \
+                    -xcursor \
+                    -xfixes \
+                    -qdbus
+
+          # build qt master
+          make || return 1
+          make docs || return 1
+
+          #install everything
+          make INSTALL_ROOT=${_pkgdir} install
+
+          install -D -m644 tools/assistant/tools/assistant/images/assistant.png ${_pkgdir}/share/pixmaps/assistant.png
+          install -D -m644 tools/linguist/linguist/images/appicon.png ${_pkgdir}/share/pixmaps/linguist.png
+          install -D -m644 tools/designer/src/designer/images/designer.png ${_pkgdir}/share/pixmaps/designer.png
+          install -D -m644 src/gui/dialogs/images/qtlogo-64.png ${_pkgdir}/share/pixmaps/qtlogo.png
+          install -d ${_pkgdir}/share/applications
+          install -m644 ${srcdir}/{linguist,designer,assistant,qtconfig}.desktop ${_pkgdir}/share/applications/
+          install -D -m644 LGPL_EXCEPTION.txt ${_pkgdir}/share/licenses/qt/LGPL_EXCEPTION.txt
+
+          install -d ${_pkgdir}/share/doc/qt
+          cp -r doc/src/* ${_pkgdir}/share/doc/qt
+
+          # cleanup and path fixes
+          find ${_pkgdir}/lib -type f -name '*prl' -print -exec sed -i -e "/^QMAKE_PRL_BUILD_DIR/d" {} \;
+          sed -i -e "s|-L$srcdir/${_pkgfqn}/lib||g" ${_pkgdir}/lib/pkgconfig/*.pc
+          sed -i -e "s|$srcdir/${_pkgfqn}/bin/moc|/bin/moc|g" ${_pkgdir}/lib/pkgconfig/*.pc
+          sed -i -e "s|$srcdir/${_pkgfqn}/bin/uic|/bin/uic|g" ${_pkgdir}/lib/pkgconfig/*.pc
+}

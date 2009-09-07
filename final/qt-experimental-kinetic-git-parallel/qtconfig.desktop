@@ -1,0 +1,9 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Name=Qt Config Kinetic
+Comment=Configure Qt behavior, styles, fonts
+Exec=/opt/qt-experimental/kinetic/bin/qtconfig
+Icon=/opt/qt-experimental/kinetic/share/pixmaps/qtlogo.png
+Terminal=false
+Type=Application
+Categories=Qt;Settings;

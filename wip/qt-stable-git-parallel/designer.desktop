@@ -1,0 +1,10 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Exec=/opt/qt-stable-git-full/bin/designer
+Name=Qt Designer
+GenericName=Interface Designer
+MimeType=application/x-designer
+Icon=/opt/qt-stable-git-full/share/pixmaps/designer.png
+Terminal=false
+Type=Application
+Categories=Qt;Development;GUIDesigner

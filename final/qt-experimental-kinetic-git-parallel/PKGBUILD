@@ -1,0 +1,118 @@
+# $Id$
+# Contributor: friesoft <friesoft@gmail.com>
+# This package provides the kinetic clone of Qt to be installed in parallel to existing Qt installations
+
+pkgname=qt-experimental-kinetic-git-parallel
+pkgver=20090904
+pkgrel=1
+pkgdesc="The C++ Qt GUI framework - kinetic clone - for parallel installation"
+arch=('i686' 'x86_64')
+url="http://www.qtsoftware.com"
+license=('GPL3' 'LGPL')
+
+depends=('libpng' 'mesa' 'fontconfig' 'libtiff' 'libmng' 'sqlite3' 'libxrandr' 'glib2' 'libxi' 'dbus' 'libxcursor' 'libxinerama' 'libxrender')
+optdepends=('postgresql-libs' 'libmysqlclient' 'unixodbc')
+makedepends=('inputproto' 'postgresql-libs' 'mysql' 'unixodbc' 'cups' 'libxfixes' 'gtk2')
+provides=('qt-experimental-kinetic-git-parallel')
+options=('!libtool' 'docs')
+
+# desktop files and qdoc3 patch -- needed for qtdesigner-git build
+source=('assistant.desktop' 'designer.desktop' 'linguist.desktop' 'qtconfig.desktop' 'qdoc3.patch')
+
+md5sums=('3fadf0078dc840bbc28a72494f6096aa'
+         '44d8efc0608254bf4d46bbceceb594da'
+         '9edbeb4f06db4a9d977806e26d4c9c58'
+         'cecc6181279bf064aebfdc2adc94cf98'
+         '4c831aa3979f3b9aa0c921a551dec9b0')
+
+_gitroot="git://gitorious.org/+qt-kinetic-developers/qt/kinetic.git"
+_gitname="kinetic"
+
+build() {
+          msg "Connecting to git server...."
+
+          if [ -d ${srcdir}/$_gitname ] ; then
+                    cd $_gitname && git pull origin
+                    msg "The local files have been updated to the current revision"
+
+                    cd $srcdir/$_gitname
+          else
+                    git clone $_gitroot
+
+                    cd $srcdir/$_gitname
+
+                    # apply qdoc3 patch
+                    patch -p0 -i $srcdir/qdoc3.patch
+
+                    sed -i "s|-O2|$CXXFLAGS|" mkspecs/common/g++.conf
+                    sed -i "/^QMAKE_RPATH/s| -Wl,-rpath,||g" mkspecs/common/g++.conf
+          fi
+
+          unset QMAKESPEC
+          export QT4DIR=$srcdir/$_gitname
+          export PATH=${QT4DIR}/bin:${PATH}
+          export LD_LIBRARY_PATH=${QT4DIR}/lib:${LD_LIBRARY_PATH}
+
+          ./configure -confirm-license -opensource \
+                    -prefix /opt/qt-experimental/kinetic \
+                    -sysconfdir /etc \
+                    -plugindir /opt/qt-experimental/kinetic/lib/plugins \
+                    -translationdir /opt/qt-experimental/kinetic/share/translations \
+                    -datadir /opt/qt-experimental/kinetic/share \
+                    -docdir /opt/qt-experimental/kinetic/share/doc \
+                    -examplesdir /opt/qt-experimental/kinetic/share/doc/examples \
+                    -demosdir /opt/qt-experimental/kinetic/share/doc/demos \
+                    -largefile \
+                    -plugin-sql-{psql,mysql,sqlite,odbc} \
+                    -system-sqlite \
+                    -xmlpatterns \
+                    -no-phonon \
+                    -svg \
+                    -webkit \
+                    -scripttools \
+                    -system-zlib \
+                    -system-libtiff \
+                    -system-libpng \
+                    -system-libmng \
+                    -system-libjpeg \
+                    -openssl-linked \
+                    -optimized-qmake \
+                    -dbus-linked \
+                    -reduce-relocations \
+                    -no-separate-debug-info \
+                    -gtkstyle \
+                    -opengl \
+                    -glib \
+                    -cups \
+                    -iconv \
+                    -xinerama \
+                    -xcursor \
+                    -xfixes \
+                    -qdbus
+
+          # build qt kinetic master
+          make || return 1
+          make docs
+
+          #install everything
+          make INSTALL_ROOT=$pkgdir install
+
+          install -D -m644 tools/assistant/tools/assistant/images/assistant.png ${pkgdir}/opt/qt-experimental/kinetic/share/pixmaps/assistant.png
+          install -D -m644 tools/linguist/linguist/images/appicon.png ${pkgdir}/opt/qt-experimental/kinetic/share/pixmaps/linguist.png
+          install -D -m644 tools/designer/src/designer/images/designer.png ${pkgdir}/opt/qt-experimental/kinetic/share/pixmaps/designer.png
+          install -D -m644 src/gui/dialogs/images/qtlogo-64.png ${pkgdir}/opt/qt-experimental/kinetic/share/pixmaps/qtlogo.png
+          install -d ${pkgdir}/opt/qt-experimental/kinetic/share/applications
+          install -m644 ${srcdir}/{linguist,designer,assistant,qtconfig}.desktop ${pkgdir}/opt/qt-experimental/kinetic/share/applications
+          install -D -m644 LGPL_EXCEPTION.txt ${pkgdir}/opt/qt-experimental/kinetic/share/licenses/LGPL_EXCEPTION.txt
+
+          install -d ${pkgdir}/opt/qt-experimental/kinetic/doc
+          cp -r doc/html ${pkgdir}/opt/qt-experimental/kinetic/doc
+          cp -r doc/qch ${pkgdir}/opt/qt-experimental/kinetic/doc
+          cp -r doc/src ${pkgdir}/opt/qt-experimental/kinetic/doc
+
+          # cleanup and path fixes
+          find $pkgdir/opt/qt-experimental/kinetic/lib -type f -name '*prl' -print -exec sed -i -e "/^QMAKE_PRL_BUILD_DIR/d" {} \;
+          sed -i -e "s|-L$srcdir/${_pkgfqn}/lib||g" $pkgdir/opt/qt-experimental/kinetic/lib/pkgconfig/*.pc
+          sed -i -e "s|$srcdir/${_pkgfqn}/bin/moc|/opt/qt-experimental/kinetic/bin/moc|g" $pkgdir/opt/qt-experimental/kinetic/lib/pkgconfig/*.pc
+          sed -i -e "s|$srcdir/${_pkgfqn}/bin/uic|/opt/qt-experimental/kinetic/bin/uic|g" $pkgdir/opt/qt-experimental/kinetic/lib/pkgconfig/*.pc
+}

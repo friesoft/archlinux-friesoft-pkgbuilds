@@ -1,0 +1,9 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Name=Qt Config
+Comment=Configure Qt behavior, styles, fonts
+Exec=/opt/qt-stable-git-full/bin/qtconfig
+Icon=/opt/qt-stable-git-full/share/pixmaps/qtlogo
+Terminal=false
+Type=Application
+Categories=Qt;Settings;

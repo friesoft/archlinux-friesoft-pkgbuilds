@@ -1,0 +1,66 @@
+# Contributor: raubkopierer <mail[dot]sensenmann[at]googlemail[dot]com>
+
+pkgname=ffmpeg-svn-vdpau
+pkgver=19639
+pkgrel=1
+pkgdesc="Complete and free Internet live audio and video broadcasting solution for Linux/Unix"
+arch=('i686' 'x86_64')
+url="http://ffmpeg.mplayerhq.hu/"
+license=('GPL')
+depends=('lame' 'sdl' 'faad2' 'faac' 'zlib' 'imlib2' 'x264' 'libtheora')
+makedepends=('subversion')
+provides=("ffmpeg=`date +%Y%m%d`")
+conflicts=('ffmpeg')
+source=()
+md5sums=()
+
+_svntrunk=svn://svn.ffmpeg.org/ffmpeg/trunk
+_svnmod=ffmpeg
+
+build() {
+  cd "$srcdir"
+
+  if [ -d $_svnmod/.svn ]; then
+    (cd $_svnmod && svn up -r $pkgver)
+  else
+    svn co $_svntrunk --config-dir ./ -r $pkgver $_svnmod
+  fi
+
+  msg "SVN checkout done or server timeout"
+  msg "Starting make..."
+
+  rm -rf "$_svnmod-build"
+  mkdir "$_svnmod-build"
+  cd "$_svnmod-build"
+
+  "$srcdir/$_svnmod/configure" \
+  --prefix=/usr \
+  --enable-gpl \
+  --enable-nonfree \
+  --enable-libmp3lame \
+  --enable-libfaac \
+  --enable-libfaad \
+  --enable-libvorbis \
+  --enable-libxvid \
+  --enable-libx264 \
+  --enable-libtheora \
+  --enable-vdpau \
+  --enable-postproc \
+  --enable-shared \
+  --enable-pthreads \
+  --enable-x11grab \
+  --enable-shared \
+  --arch=`uname -m` \
+  || return 1
+
+  make || return 1
+  make tools/qt-faststart || return 1
+  make doc/ff{mpeg,play,server}.1 || return 1
+
+  make DESTDIR="$pkgdir" install || return 1
+  make DESTDIR="$pkgdir" install-man || return 1
+  install -D -m755 tools/qt-faststart "$pkgdir/usr/bin/qt-faststart" || return 1
+
+  # since makepkg currently declines to strip .a files, do this for now
+  strip --strip-debug "$pkgdir"/usr/lib/*.a || return 1
+}
