@@ -3,7 +3,7 @@
 # This package provides the kinetic clone of Qt (branch declarative) to be installed in parallel to existing Qt installations
 
 pkgname=qt-experimental-kinetic-declarative-git-parallel
-pkgver=20090907
+pkgver=20090920
 pkgrel=1
 pkgdesc="The C++ Qt GUI framework - kinetic clone - branch declarative - for parallel installation"
 arch=('i686' 'x86_64')
@@ -32,7 +32,9 @@ build() {
           msg "Connecting to git server...."
 
           if [ -d ${srcdir}/$_gitname ] ; then
-                    cd $_gitname && git pull git://gitorious.org/qt/kinetic.git kinetic-declarativeui
+                    cd $_gitname
+                    git pull git://gitorious.org/qt/kinetic.git kinetic-declarativeui
+
                     msg "The local files have been updated to the current revision"
 
                     cd $srcdir/$_gitname
@@ -41,7 +43,7 @@ build() {
 
                     cd $srcdir/$_gitname
 
-                    git checkout --track -b kinetic-declarativeui origin/kinetic-declarativeui
+                    git checkout --track -f -b kinetic-declarativeui origin/kinetic-declarativeui
 
                     # apply qdoc3 patch
                     patch -p0 -i $srcdir/qdoc3.patch
@@ -93,7 +95,7 @@ build() {
                     -qdbus
 
           # build qt kinetic declarative ui
-          make || return 1
+          make
           make docs
 
           #install everything

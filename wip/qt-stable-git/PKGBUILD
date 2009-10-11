@@ -1,11 +1,11 @@
 # $Id$
 # Contributor: friesoft <friesoft@gmail.com>
+# This package provides the 4.6 stable branch of Qt
 
-pkgname=qt-stable-git-full
-pkgver=20090813
+pkgname=qt-stable-git
+pkgver=20091011
 pkgrel=1
-_pkgver=4.5
-pkgdesc="The C++ Qt GUI framework - current development snapshot"
+pkgdesc="The C++ Qt GUI framework - 4.6 series"
 arch=('i686' 'x86_64')
 url="http://www.qtsoftware.com"
 license=('GPL3' 'LGPL')
@@ -13,17 +13,19 @@ license=('GPL3' 'LGPL')
 depends=('libpng' 'mesa' 'fontconfig' 'libtiff' 'libmng' 'sqlite3' 'libxrandr' 'glib2' 'libxi' 'dbus' 'libxcursor' 'libxinerama' 'libxrender')
 optdepends=('postgresql-libs' 'libmysqlclient' 'unixodbc')
 makedepends=('inputproto' 'postgresql-libs' 'mysql' 'unixodbc' 'cups' 'libxfixes' 'gtk2')
-provides=('qt=4.5.3' 'qt4' 'qt4-doc')
-replaces=('qt' 'qt4' 'qt4-git' 'qt4-doc')
-conflicts=('qt' 'qt4' 'qt4-git' 'qt4-doc')
+provides=('qt-stable-git' 'qt' 'qt4' 'qt-doc' 'qt=4.6.0' 'qt4=4.6.0')
+replaces=('qt-stable-git' 'qt' 'qt4' 'qt-doc' 'qt4-git' 'qt4-doc')
+conflicts=('qt-stable-git' 'qt' 'qt4' 'qt-doc' 'qt4-git' 'qt4-doc')
 options=('!libtool' 'docs')
-md5sums=('f11d6cde770349f4dce6590a89a28fe7'
-         '175d0abfff870af365833b4fa580b096'
-         '5c95ee417ef52a3dbdf87dc99e7a92bc'
-         '80125d3fdbe834282f3bf7f03796bc2d'
-         '9c0a0db3569e889a54a6cddcd55c538c')
+
 # desktop files and qdoc3 patch -- needed for qtdesigner-git build
 source=('assistant.desktop' 'designer.desktop' 'linguist.desktop' 'qtconfig.desktop' 'qdoc3.patch')
+
+md5sums=('f11d6cde770349f4dce6590a89a28fe7'
+'175d0abfff870af365833b4fa580b096'
+'5c95ee417ef52a3dbdf87dc99e7a92bc'
+'80125d3fdbe834282f3bf7f03796bc2d'
+'9c0a0db3569e889a54a6cddcd55c538c')
 
 _gitroot="git://gitorious.org/qt/qt.git"
 _gitname="qt"
@@ -32,7 +34,9 @@ build() {
           msg "Connecting to git server...."
 
           if [ -d ${srcdir}/$_gitname ] ; then
-                    cd $_gitname && git pull git://gitorious.org/qt/qt.git 4.5
+                    cd $_gitname
+                    git pull git://gitorious.org/qt/qt.git 4.6-stable
+
                     msg "The local files have been updated to the current revision"
 
                     cd $srcdir/$_gitname
@@ -40,7 +44,8 @@ build() {
                     git clone $_gitroot
 
                     cd $srcdir/$_gitname
-                    git checkout remotes/origin/4.5
+
+                    git checkout --track -f -b 4.6-stable remotes/origin/4.6-stable
 
                     # apply qdoc3 patch
                     patch -p0 -i $srcdir/qdoc3.patch
@@ -76,7 +81,7 @@ build() {
                     -system-libpng \
                     -system-libmng \
                     -system-libjpeg \
-                    -openssl-linked \
+           #         -openssl-linked \
                     -optimized-qmake \
                     -dbus-linked \
                     -reduce-relocations \
@@ -91,7 +96,7 @@ build() {
                     -xfixes \
                     -qdbus
 
-          # build qt master
+          # build qt stable 4.6
           make || return 1
           make docs || return 1
 
@@ -107,7 +112,9 @@ build() {
           install -D -m644 LGPL_EXCEPTION.txt ${pkgdir}/usr/share/licenses/qt/LGPL_EXCEPTION.txt
 
           install -d ${pkgdir}/usr/share/doc/qt
-          cp -r doc/src/* ${pkgdir}/usr/share/doc/qt
+          cp -r doc/html ${pkgdir}/usr/share/doc/qt
+          cp -r doc/qch ${pkgdir}/usr/share/doc/qt
+          cp -r doc/src ${pkgdir}/usr/share/doc/qt
 
           # cleanup and path fixes
           find $pkgdir/usr/lib -type f -name '*prl' -print -exec sed -i -e "/^QMAKE_PRL_BUILD_DIR/d" {} \;
@@ -115,4 +122,3 @@ build() {
           sed -i -e "s|$srcdir/${_pkgfqn}/bin/moc|/usr/bin/moc|g" $pkgdir/usr/lib/pkgconfig/*.pc
           sed -i -e "s|$srcdir/${_pkgfqn}/bin/uic|/usr/bin/uic|g" $pkgdir/usr/lib/pkgconfig/*.pc
 }
-

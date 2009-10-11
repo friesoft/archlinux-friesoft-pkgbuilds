@@ -10,13 +10,13 @@ arch=('i686' 'x86_64')
 url="http://www.qtsoftware.com"
 license=('GPL3' 'LGPL')
 
-depends=    ('libpng' 'mesa' 'fontconfig' 'libtiff' 'libmng' 'sqlite3' 'libxrandr' 'glib2' 'libxi' 'dbus' 'libxcursor' 'libxinerama' 'libxrender')
-optdepends= ('postgresql-libs' 'libmysqlclient' 'unixodbc')
+depends=('libpng' 'mesa' 'fontconfig' 'libtiff' 'libmng' 'sqlite3' 'libxrandr' 'glib2' 'libxi' 'dbus' 'libxcursor' 'libxinerama' 'libxrender')
+optdepends=('postgresql-libs' 'libmysqlclient' 'unixodbc')
 makedepends=('inputproto' 'postgresql-libs' 'mysql' 'unixodbc' 'cups' 'libxfixes' 'gtk2')
-provides=   ('qt-experimental-kinetic-git' 'qt' 'qt4' 'qt-doc' 'qt=4.6.0' 'qt4=4.6.0')
-replaces=   ('qt-experimental-kinetic-git' 'qt' 'qt4' 'qt-doc' 'qt4-git' 'qt4-doc')
-conflicts=  ('qt-experimental-kinetic-git' 'qt' 'qt4' 'qt-doc' 'qt4-git' 'qt4-doc')
-options=    ('!libtool' 'docs')
+provides=('qt-experimental-kinetic-git' 'qt' 'qt4' 'qt-doc' 'qt=4.6.0' 'qt4=4.6.0')
+replaces=('qt-experimental-kinetic-git' 'qt' 'qt4' 'qt-doc' 'qt4-git' 'qt4-doc')
+conflicts=('qt-experimental-kinetic-git' 'qt' 'qt4' 'qt-doc' 'qt4-git' 'qt4-doc')
+options=('!libtool' 'docs')
 
 # desktop files and qdoc3 patch -- needed for qtdesigner-git build
 source=('assistant.desktop' 'designer.desktop' 'linguist.desktop' 'qtconfig.desktop' 'qdoc3.patch')
