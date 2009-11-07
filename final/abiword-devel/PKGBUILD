@@ -1,0 +1,31 @@
+# Contributor: twa022 <twa022@gmail.com>
+
+pkgname=abiword-devel-collab
+_pkgname=abiword
+pkgver=2.8.0
+pkgrel=1
+pkgdesc="A fully-featured word processor (Development Version)"
+arch=('i686' 'x86_64')
+license=('GPL')
+url="http://www.abisource.com"
+depends=('fribidi>=0.10.9' 'enchant>=1.3.0' 'libgnomeprintui'
+         'wv>=1.2.4' 'libgnomeui>=2.22.01' 'libgsf-gnome>=1.14.14' 'asio' 'libsoup')
+makedepends=('pkgconfig')
+optdepends=('goffice-devel')
+options=('!makeflags' 'force')
+provides=(${_pkgname})
+conflicts=(${_pkgname})
+source=(${_pkgname}.desktop)
+md5sums=('04fcb384c712383be7b23e1a556aef7d')
+
+build() {
+  svn co http://svn.abisource.com/abiword/trunk ${pkgname}
+  cd ${srcdir}/${pkgname}
+  ./autogen.sh --prefix=/usr --enable-plugins=collab --enable-collab-backend-service --enable-shave
+  make || return 1
+  make DESTDIR=${pkgdir} install
+  # rm -rf ${pkgdir}/usr/lib
+  mkdir -p ${pkgdir}/usr/share/pixmaps
+  cp -p ${pkgdir}/usr/share/${_pkgname}-${pkgver%.*}/icons/abiword_48.png ${pkgdir}/usr/share/pixmaps/abiword.png
+  install -D -m644 ${srcdir}/${_pkgname}.desktop ${pkgdir}/usr/share/applications/${_pkgname}.desktop
+}

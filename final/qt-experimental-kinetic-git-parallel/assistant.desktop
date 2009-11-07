@@ -1,9 +1,0 @@
-#!/usr/bin/env xdg-open
-[Desktop Entry]
-Exec=/opt/qt-experimental/kinetic/bin/assistant
-Name=Qt Assistant Kinetic
-GenericName=Qt Document Browser Kinetic
-Icon=/opt/qt-experimental/kinetic/share/pixmaps/assistant.png
-Terminal=false
-Type=Application
-Categories=Qt;Development;Documentation
