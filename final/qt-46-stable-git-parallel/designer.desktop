@@ -1,0 +1,10 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Exec=/opt/qt-46-stable/bin/designer
+Name=Qt 4.6 Stable - Designer
+GenericName=Interface Designer
+MimeType=application/x-designer
+Icon=/opt/qt-46-stable/share/pixmaps/designer.png
+Terminal=false
+Type=Application
+Categories=Qt;Development;GUIDesigner
