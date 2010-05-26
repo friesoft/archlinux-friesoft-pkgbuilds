@@ -2,21 +2,20 @@
 # Contributor: Alexander Baldeck <alexander@archlinux.org>
 # Maintainer: Jan de Groot <jgc@archlinux.org>
 pkgname=xulrunner-qt
-pkgver=1.9.3.4
-_ffoxver=3.6.4
-pkgrel=1
+pkgver=1.9.2.3
+_ffoxver=3.6.3
+pkgrel=2
 pkgdesc="Mozilla Runtime Environment"
 arch=(i686 x86_64)
 license=('MPL' 'GPL' 'LGPL')
-depends=('gtk2>=2.18.9' 'gcc-libs>=4.4.3' 'libidl2>=0.8.13' 'mozilla-common' 'nss>=3.12.6' 'libxt' 'hunspell>=1.2.8' 'startup-notification>=0.10' 'mime-types' 'dbus-glib>=0.82' 'alsa-lib>=1.0.21.a')
+depends=('gcc-libs>=4.4.3' 'libidl2>=0.8.13' 'mozilla-common' 'nss>=3.12.6' 'libxt' 'hunspell>=1.2.8' 'startup-notification>=0.10' 'mime-types' 'dbus-glib>=0.82' 'alsa-lib>=1.0.21.a')
 makedepends=('zip' 'pkgconfig' 'diffutils' 'qt' 'python' 'wireless_tools' 'autoconf2.13')
 optdepends=('wireless_tools: Location aware browsing'
             'python: pyxpcom')
 provides=(gecko-sdk)
 replaces=(gecko-sdk)
 url="http://wiki.mozilla.org/XUL:Xul_Runner"
-#source=(http://releases.mozilla.org/pub/mozilla.org/firefox/releases/${_ffoxver}/source/firefox-${_ffoxver}.source.tar.bz2
-source=(http://dm-download02.mozilla.org/pub/mozilla.org/firefox/nightly/3.6.4-candidates/build1/linux-i686/en-US/firefox-3.6.4.tar.bz2
+source=(http://releases.mozilla.org/pub/mozilla.org/firefox/releases/${_ffoxver}/source/firefox-${_ffoxver}.source.tar.bz2
         mozconfig
         firefox-qt.patch
         mozilla-pkgconfig.patch
@@ -27,7 +26,7 @@ source=(http://dm-download02.mozilla.org/pub/mozilla.org/firefox/nightly/3.6.4-c
         enable-x86_64-tracemonkey.patch
         startup-notification.patch)
 
-md5sums=('81f8c0225d0c3fd5db4a5ea8665c38af'
+md5sums=('5e4541ab23084b7b14ba228291ce2688'
          'c6ea05a012f365bf1f2f2570b6bd913d'
          '17d375f9e00c192b5ed314216a18695e'
          '2d2d7143a4e0bfe71149a51f8dbbab2f'
@@ -39,10 +38,10 @@ md5sums=('81f8c0225d0c3fd5db4a5ea8665c38af'
          '5876c45f85dc3d8989a9d2d098dc9f15')
 
 build() {
-  cd "${srcdir}/mozilla-1.9.3"
+  cd "${srcdir}/mozilla-1.9.2"
   cp "${srcdir}/mozconfig" .mozconfig
 
-  patch -Np1 -i "${srcdir}/firefox-qt.patch" 
+  patch -Np1 -i "${srcdir}/firefox-qt.patch"
 
   #Upstream patch. Still not applied to 1.9.2
   patch -Np1 -i "${srcdir}/mozilla-ps-pdf-simplify-operators.patch"
