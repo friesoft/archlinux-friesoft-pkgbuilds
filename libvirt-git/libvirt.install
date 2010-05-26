@@ -1,0 +1,61 @@
+_libvirt_setup() {
+	rm -f /usr/lib/python?.?/site-packages/libvirt.pyc
+	echo ">>> To use libvirt as a non-root user:"
+	echo ">>>  Use polkit to grant access."
+	echo ">>>  ...or change the access model in /etc/libvirt/libvirtd.conf."
+	echo ">>>     (see unixperms.patch in PKGBUILD for help)"
+	echo ""
+}
+
+post_install() {
+	_libvirt_setup || return 1
+	
+	echo ">>> Be sure to see optdepends as you may find some of them helpfull."
+	echo ">>>  Especially: bridge-utils, dnsmasq, and hal."
+	echo ""
+	echo ">>> To start libvirtd run: '/etc/rc.d/libvirtd start' as root."
+	echo ">>> Add 'libvirtd' to daemons in /etc/rc.conf if you want it to load upon"
+	echo ">>>  booting."
+	echo ""
+	
+	/bin/true
+}
+
+post_upgrade() {
+  _libvirt_setup || return 1
+  
+  if [ "$1" \< "0.7.2-1" ] ; then
+    echo ">>> /etc/libvirt/libvirtd.conf is no longer pached to use unix permissions"
+    echo ">>> Access is now controlled through polkit."
+    echo ">>> If you wish to switch back to the unix pirmissions model, you can"
+    echo ">>>  modify /etc/libvirt/libvirtd.conf (see unixperms.patch in tar.gz)"
+    echo ""
+    echo ">>> You may wish to delete the group 'libvirt' as it is no longer required."
+    echo ">>>  It can be removed by running 'groupdel libvirt' as root."
+    echo ""
+  elif [ "$1" \< "0.7.4-1" ] ; then
+    echo ">>> Note: libvirt now uses polkit instead of policykit to grant permissions."
+    echo ""
+  fi
+
+  echo ">>> To finish the upgrade, restart libvirtd by running the command:"
+  echo ">>>  '/etc/rc.d/libvirtd restart' as root or rebooting."
+  echo ""
+  
+  /bin/true
+}
+
+post_remove() {
+   rm -f /usr/lib/python[0-9].[0-9]/site-packages/libvirt.pyc
+   echo ">>> You may wish to delete the group 'libvirt' if it still exists."
+   echo ">>>  It can be removed by running 'groupdel libvirt' as root."
+   echo ""
+   depmod -a
+   
+   /bin/true
+}
+
+op=$1
+shift
+$op $*
+

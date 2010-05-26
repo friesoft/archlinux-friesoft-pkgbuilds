@@ -1,0 +1,22 @@
+# Contributor: Bernhard Friedreich <friesoft@gmail.com>
+
+pkgname=glassfish-v3
+pkgver=3.0
+pkgrel=1
+pkgdesc="Application server (like tomcat) based on Java EE 6 from Sun"
+url="https://glassfish.dev.java.net/"
+license=(GPL CDDL)
+provides=(glassfish)
+conflicts=(glassfish)
+depends=(jre apache-ant)
+makedepends=(jdk)
+arch=(i686 x86_64)
+options=(!strip)
+source=(http://download.java.net/glassfish/v3/release/glassfish-v3.zip)
+md5sums=('537b1c6574316ebc4dc69ba6dd26e213')
+
+build() {
+    mkdir $startdir/pkg/opt
+    mv glassfishv3 $startdir/pkg/opt/
+}
+

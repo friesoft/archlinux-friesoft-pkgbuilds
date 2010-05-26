@@ -1,0 +1,9 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Name=Qt 4.5 - Config
+Comment=Configure Qt behavior, styles, fonts
+Exec=/opt/qt-45/bin/qtconfig
+Icon=/opt/qt-45/share/pixmaps/qtlogo
+Terminal=false
+Type=Application
+Categories=Qt;Settings;

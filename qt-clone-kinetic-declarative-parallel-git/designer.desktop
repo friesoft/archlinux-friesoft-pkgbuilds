@@ -1,0 +1,10 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Exec=/opt/qt-clones/kinetic/declarative/bin/designer
+Name=Qt Kinetic Declarative Clone - Designer
+GenericName=Interface Designer
+MimeType=application/x-designer
+Icon=/opt/qt-clones/kinetic/declarative/share/pixmaps/designer.png
+Terminal=false
+Type=Application
+Categories=Qt;Development;GUIDesigner

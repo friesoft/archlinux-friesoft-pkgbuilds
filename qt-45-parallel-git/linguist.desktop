@@ -1,0 +1,10 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Exec=/opt/qt-45/bin/linguist
+Name=Qt 4.5 - Linguist
+GenericName=Translation Tool
+MimeType=application/x-linguist
+Terminal=false
+Type=Application
+Icon=/opt/qt-45/share/pixmaps/linguist.png
+Categories=Qt;Development;Translation

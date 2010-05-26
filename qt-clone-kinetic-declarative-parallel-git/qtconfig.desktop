@@ -1,0 +1,9 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Name=Qt Kinetic Declarative Clone - Config
+Comment=Configure Qt behavior, styles, fonts
+Exec=/opt/qt-clones/kinetic/declarative/bin/qtconfig
+Icon=/opt/qt-clones/kinetic/declarative/share/pixmaps/qtlogo
+Terminal=false
+Type=Application
+Categories=Qt;Settings;

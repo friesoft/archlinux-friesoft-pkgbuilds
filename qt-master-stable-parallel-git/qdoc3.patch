@@ -1,0 +1,21 @@
+diff -up qt-everywhere-opensource-src-4.6.0-beta1/tools/qdoc3/qdoc3.pro.qdoc3 qt-everywhere-opensource-src-4.6.0-beta1/tools/qdoc3/qdoc3.pro
+--- qt-everywhere-opensource-src-4.6.0-beta1/tools/qdoc3/qdoc3.pro.qdoc3	2009-10-13 10:34:08.000000000 -0500
++++ qt-everywhere-opensource-src-4.6.0-beta1/tools/qdoc3/qdoc3.pro	2009-10-16 14:55:27.024789581 -0500
+@@ -105,3 +105,6 @@ SOURCES += apigenerator.cpp \
+            webxmlgenerator.cpp \
+ 	   yyindent.cpp
+ 
++TARGET= qdoc3
++target.path = $$[QT_INSTALL_BINS]
++INSTALLS += target
+diff -up qt-everywhere-opensource-src-4.6.0-beta1/tools/tools.pro.qdoc3 qt-everywhere-opensource-src-4.6.0-beta1/tools/tools.pro
+--- qt-everywhere-opensource-src-4.6.0-beta1/tools/tools.pro.qdoc3	2009-10-13 10:34:08.000000000 -0500
++++ qt-everywhere-opensource-src-4.6.0-beta1/tools/tools.pro	2009-10-16 14:57:49.699789384 -0500
+@@ -14,6 +14,7 @@ no-png {
+          SUBDIRS += designer
+      }
+      SUBDIRS     += linguist
++     SUBDIRS     += qdoc3
+      symbian: SUBDIRS = designer
+      wince*: SUBDIRS = qtestlib designer
+      unix:!mac:!embedded:contains(QT_CONFIG, qt3support):SUBDIRS += qtconfig

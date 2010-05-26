@@ -1,0 +1,36 @@
+pkgname=qtd-hg
+pkgver=0.1
+pkgrel=1
+pkgdesc="Bindings of Qt GUI library to D programming language"
+arch=('i686')
+url="http://www.dsource.org/projects/qtd"
+license=("Boost")
+depends=('dmd' 'libtango' 'qt')
+makedepends=('svn')
+provides=('qtd')
+conflicts=('qtd')
+
+_hgrepo=http://hg.dsource.org/projects/qtd/
+_hgmod=qtd
+
+build() {
+  
+  if [ -d $_hgmod/.hg ]; then
+    (cd $_hgmod && hg pull )
+  else
+    hg clone $_hgrepo $_hgmod
+  fi
+
+  msg "hg checkout done or server timeout"
+  msg "Starting ant build process..."
+
+  cd $srcdir/$_hgmod
+
+  mkdir build
+  cd build
+
+  cmake -DCMAKE_INSTALL_PREFIX=/usr .. || return 1
+  make || return 1
+  DESTDIR=${pkgdir} make install || return 1
+}
+

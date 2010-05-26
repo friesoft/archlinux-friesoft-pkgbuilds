@@ -1,0 +1,10 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Exec=/opt/qt-45/bin/designer
+Name=Qt 4.5 - Designer
+GenericName=Interface Designer
+MimeType=application/x-designer
+Icon=/opt/qt-45/share/pixmaps/designer.png
+Terminal=false
+Type=Application
+Categories=Qt;Development;GUIDesigner

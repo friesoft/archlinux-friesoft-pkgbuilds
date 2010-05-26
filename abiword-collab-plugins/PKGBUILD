@@ -1,0 +1,28 @@
+# Maintainer: Bernhard Friedreich <friesoft@gmail.com>
+
+pkgname=abiword-collab-plugins
+pkgver=2.8.4
+pkgrel=1
+arch=('i686' 'x86_64')
+license=('GPL')
+url="http://www.abisource.com"
+makedepends=('pkgconfig' 'fribidi' 'enchant' 'librsvg' 'wv' 'libgsf-gnome' 'aiksaurus'
+        'gtkmathview' 'libsoup' 'link-grammar' 'libwpd' 'psiconv' 'libxslt' 'asio' 'loudmouth')
+options=('!makeflags' '!libtool')
+provides=('abiword-plugins')
+conflicts=('abiword-plugins')
+source=(http://www.abisource.com/downloads/abiword/${pkgver}/source/${pkgbase}-${pkgver}.tar.gz)
+md5sums=('f782ecb8e07d07ec179f7a143353cc29')
+
+build() {
+  cd "${srcdir}/${pkgbase}-${pkgver}"
+
+  ./configure --prefix=/usr \
+              --enable-plugins=collab --enable-collab-backend-service --enable-shave || return 1
+
+  cd "${srcdir}/${pkgbase}-${pkgver}/plugins"
+  make DESTDIR="${pkgdir}" install || return 1
+
+  # Remove files conflicting with abiword package
+  rm -rf ${pkgdir}/usr/share
+}

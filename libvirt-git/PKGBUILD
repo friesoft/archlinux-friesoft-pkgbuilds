@@ -1,0 +1,50 @@
+pkgname=libvirt-git
+pkgver=20100523
+pkgrel=1
+pkgdesc="API for controlling virtualization engines (openvz,kvm,qemu,virtualbox,xen,etc)"
+arch=('i686' 'x86_64')
+url="http://libvirt.org/"
+license=('LGPL')
+depends=('e2fsprogs' 'gnutls' 'iptables' 'libxml2' 'parted' 'polkit' 'python' 'libcap-ng')
+makedepends=('avahi' 'libsasl' 'pkgconfig' 'git' 'libxslt')
+optdepends=('avahi: for network discovery' 'bridge-utils: for briged networking (default)' 'dnsmasq: for NAT/DHCP for guests' 'hal' 'kernel26-ovz24: for openvz guests' 'kvm' 'libsasl: for sasl support' 'lxc' 'qemu' 'user-mode-linux' 'virtualbox_bin' 'virtualbox-ose' 'xen')
+conflicts=('libvirt')
+provides=('libvirt')
+options=(emptydirs)
+backup=('/etc/conf.d/libvirtd' '/etc/libvirt/libvirtd.conf' '/etc/libvirt/qemu.conf' '/etc/sasl2/libvirt.conf')
+install="libvirt.install"
+source=('libvirtd.conf.d'
+        'libvirtd.rc.d')
+md5sums=('cb4e9bc6b209c1f3077d3698bf1d4437'
+         '5dc1296fa9fcdd0e03853708388b511b')
+
+_gitroot="git://libvirt.org/libvirt.git"
+_gitname="master"
+
+build() {
+
+  msg2 "Syncing with ${_gitroot}..."
+    g=${startdir}/${pkgname}.git; w=${srcdir}/${pkgname}
+    [ -n "${_gitname#HEAD}" ] || \
+      _gitname=$(git ls-remote $_gitroot | awk '$2~/HEAD/ {S=$1}; $1==S && $2!~/HEAD/ {sub("[a-z]+/[a-z]+/","",$2); print $2; exit}')
+    [ -d "${g}" ] || git --git-dir=${g} --work-tree=${w} init
+    mkdir -p ${w} && { [ -d "${w}/.git" ] || ln -s ${g} ${w}/.git; } && cd ${w}
+    git show-ref -q $_gitname || d="--depth=1"
+    git fetch -f -u -n $d ${_gitroot} +${_gitname}:${_gitname} || return 1
+    git reset --hard ${_gitrefspec:=$_gitname} || return 1
+  msg2 "Fetched remote ${_gitname}"
+
+  ./autogen.sh \
+	--prefix=/usr \
+	--libexec=/usr/lib/$pkgname \
+	--with-capng \
+	--with-network \
+	--with-lxc \
+	--without-selinux || return 1
+
+  make || return 1
+  make DESTDIR=${pkgdir} install || return 1
+  install -D -m755 ${startdir}/libvirtd.rc.d ${pkgdir}/etc/rc.d/libvirtd || return 1
+  install -D -m644 ${startdir}/libvirtd.conf.d ${pkgdir}/etc/conf.d/libvirtd || return 1
+}
+

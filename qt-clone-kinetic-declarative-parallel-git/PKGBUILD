@@ -1,0 +1,123 @@
+# $Id$
+# Contributor: friesoft <friesoft@gmail.com>
+# This package provides the kinetic clone of Qt (branch declarative) to be installed in parallel to existing Qt installations
+
+pkgname=qt-clone-kinetic-declarative-git-parallel
+pkgver=20091110
+pkgrel=1
+pkgdesc="The C++ Qt GUI framework - kinetic clone - branch declarative - for parallel installation"
+arch=('i686' 'x86_64')
+url="http://www.qtsoftware.com"
+license=('GPL3' 'LGPL')
+
+depends=('libpng' 'mesa' 'fontconfig' 'libtiff' 'libmng' 'sqlite3' 'libxrandr' 'glib2' 'libxi' 'dbus' 'libxcursor' 'libxinerama' 'libxrender' 'ca-certificates')
+optdepends=('postgresql-libs' 'libmysqlclient' 'unixodbc-compat')                                    ## unixodbc-compat can also be replaced by either unixodbc or iodbc
+makedepends=('inputproto' 'postgresql-libs' 'mysql' 'unixodbc-compat' 'cups' 'libxfixes' 'gtk2')
+options=('!libtool' 'docs')
+
+# desktop files and qdoc3 patch -- needed for qtdesigner-git build
+source=('assistant.desktop' 'designer.desktop' 'linguist.desktop' 'qtconfig.desktop' 'qdoc3.patch' 'ca-certificates.patch')
+
+md5sums=('d291b8ee59adb58379f6d307dc6b6298'
+         'f5d2841ed57962a85a7d318e707dc9fd'
+         '68f808eab0b793186771518023b4dcc3'
+         'c060d1a3e7942c26a09fa50fe12b1a40'
+         '54f953a69271404be995819f40390369'
+         'b443cbb327ae11678b71886f793303cc')
+
+_gitroot="git://gitorious.org/+qt-kinetic-developers/qt/kinetic.git"
+_gitname="kinetic"
+
+build() {
+          msg "Connecting to git server...."
+
+          if [ -d ${srcdir}/$_gitname ] ; then
+                    cd $_gitname
+                    git pull git://gitorious.org/qt/kinetic.git kinetic-declarativeui
+
+                    msg "The local files have been updated to the current revision"
+
+                    cd $srcdir/$_gitname
+          else
+                    git clone $_gitroot
+
+                    cd $srcdir/$_gitname
+                    
+                    # branch: kinetic-declarativeui
+                    git checkout --track -f -b kinetic-declarativeui origin/kinetic-declarativeui
+
+                    # apply qdoc3 patch
+                    patch -p1 -i $srcdir/qdoc3.patch
+
+                    # use system ssl cert bundle
+                    patch -p1 -i $srcdir/ca-certificates.patch
+
+                    sed -i "s|-O2|$CXXFLAGS|" mkspecs/common/g++.conf
+                    sed -i "/^QMAKE_RPATH/s| -Wl,-rpath,||g" mkspecs/common/g++.conf
+          fi
+
+          unset QMAKESPEC
+          export QT4DIR=$srcdir/$_gitname
+          export PATH=${QT4DIR}/bin:${PATH}
+          export LD_LIBRARY_PATH=${QT4DIR}/lib:${LD_LIBRARY_PATH}
+
+          ./configure -confirm-license -opensource \
+                    -prefix /opt/qt-clones/kinetic/declarative \
+                    -sysconfdir /etc \
+                    -plugindir /opt/qt-clones/kinetic/declarative/lib/qt/plugins \
+                    -translationdir /opt/qt-clones/kinetic/declarative/share/qt/translations \
+                    -datadir /opt/qt-clones/kinetic/declarative/share/qt \
+                    -docdir /opt/qt-clones/kinetic/declarative/share/doc/qt \
+                    -examplesdir /opt/qt-clones/kinetic/declarative/share/doc/qt/examples \
+                    -demosdir /opt/qt-clones/kinetic/declarative/share/doc/qt/demos \
+                    -largefile \
+                    -plugin-sql-{psql,mysql,sqlite,odbc} \
+                    -system-sqlite \
+                    -xmlpatterns \
+                    -no-phonon \
+                    -svg \
+                    -webkit \
+                    -scripttools \
+                    -system-zlib \
+                    -system-libtiff \
+                    -system-libpng \
+                    -system-libmng \
+                    -system-libjpeg \
+#                    -openssl-linked \             # compile error
+                    -dbus-linked \
+                    -reduce-relocations \
+                    -no-separate-debug-info \
+                    -gtkstyle \
+                    -opengl \
+                    -glib \
+                    -cups \
+                    -iconv \
+                    -xinerama \
+                    -xcursor \
+                    -xfixes \
+                    -qdbus
+
+          # build qt kinetic declarative ui
+          make || return 1
+          make docs
+
+          #install everything
+          make INSTALL_ROOT=$pkgdir install
+
+          install -D -m644 tools/assistant/tools/assistant/images/assistant.png ${pkgdir}/opt/qt-clones/kinetic/declarative/share/pixmaps/assistant.png
+          install -D -m644 tools/linguist/linguist/images/appicon.png ${pkgdir}/opt/qt-clones/kinetic/declarative/share/pixmaps/linguist.png
+          install -D -m644 tools/designer/src/designer/images/designer.png ${pkgdir}/opt/qt-clones/kinetic/declarative/share/pixmaps/designer.png
+          install -D -m644 src/gui/dialogs/images/qtlogo-64.png ${pkgdir}/opt/qt-clones/kinetic/declarative/share/pixmaps/qtlogo.png
+          install -d ${pkgdir}/opt/qt-clones/kinetic/declarative/share/applications
+          install -m644 ${srcdir}/{linguist,designer,assistant,qtconfig}.desktop ${pkgdir}/opt/qt-clones/kinetic/declarative/share/applications
+          install -D -m644 LGPL_EXCEPTION.txt ${pkgdir}/opt/qt-clones/kinetic/declarative/share/licenses/LGPL_EXCEPTION.txt
+
+          install -d ${pkgdir}/opt/qt-clones/kinetic/declarative/doc
+          cp -r doc/* ${pkgdir}/opt/qt-clones/kinetic/declarative/doc
+
+          # cleanup and path fixes
+          find $pkgdir/opt/qt-clones/kinetic/declarative/lib -type f -name '*prl' -print -exec sed -i -e "/^QMAKE_PRL_BUILD_DIR/d" {} \;
+          sed -i -e "s|-L$srcdir/${_pkgfqn}/lib||g" $pkgdir/opt/qt-clones/kinetic/declarative/lib/pkgconfig/*.pc
+          sed -i -e "s|$srcdir/${_pkgfqn}/bin/moc|/opt/qt-clones/kinetic/declarative/bin/moc|g" $pkgdir/opt/qt-clones/kinetic/declarative/lib/pkgconfig/*.pc
+          sed -i -e "s|$srcdir/${_pkgfqn}/bin/uic|/opt/qt-clones/kinetic/declarative/bin/uic|g" $pkgdir/opt/qt-clones/kinetic/declarative/lib/pkgconfig/*.pc
+}
