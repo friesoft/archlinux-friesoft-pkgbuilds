@@ -1,9 +1,0 @@
-#!/usr/bin/env xdg-open
-[Desktop Entry]
-Name=Qt 4.6 Stable - Config
-Comment=Configure Qt behavior, styles, fonts
-Exec=/opt/qt-46-stable/bin/qtconfig
-Icon=/opt/qt-46-stable/share/pixmaps/qtlogo
-Terminal=false
-Type=Application
-Categories=Qt;Settings;
