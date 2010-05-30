@@ -11,11 +11,11 @@ makedepends=('pkgconfig' 'fribidi' 'enchant' 'librsvg' 'wv' 'libgsf-gnome' 'aiks
 options=('!makeflags' '!libtool')
 provides=('abiword-plugins')
 conflicts=('abiword-plugins')
-source=(http://www.abisource.com/downloads/abiword/${pkgver}/source/${pkgbase}-${pkgver}.tar.gz)
+source=(http://www.abisource.com/downloads/abiword/${pkgver}/source/abiword-${pkgver}.tar.gz)
 md5sums=('f782ecb8e07d07ec179f7a143353cc29')
 
 build() {
-  cd "${srcdir}/${pkgbase}-${pkgver}"
+  cd "${srcdir}/abiword-${pkgver}"
 
   ./configure --prefix=/usr \
               --enable-plugins=collab --enable-collab-backend-service --enable-shave || return 1
