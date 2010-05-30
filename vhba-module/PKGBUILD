@@ -1,0 +1,34 @@
+# $Id: PKGBUILD 12126 2010-02-27 16:39:21Z ibiru $
+# Maintainer: Mateusz Herych <heniekk@gmail.com>
+# Contributor: Charles Lindsay <charles@chaoslizard.org>
+
+pkgname=vhba-module
+pkgver=1.2.1
+_kernver='2.6.34-ARCH'
+pkgrel=8
+pkgdesc="Kernel module that emulates SCSI devices"
+arch=('i686' 'x86_64')
+url="http://cdemu.sourceforge.net/"
+license=('GPL2')
+depends=('kernel26>=2.6.34')
+makedepends=('kernel26-headers>=2.6.34')
+install=vhba-module.install
+source=(http://downloads.sourceforge.net/cdemu/$pkgname-$pkgver.tar.bz2 vhba-1.2.1-kernel-2.6.34.patch)
+md5sums=('a3b6ad798f2b72ef599df797ef79e5ec'
+         '0ea6d187c2e1c2656b6814588c2a8264')
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver"
+  #workaround to fix compilation against 2.6.33
+  #http://bugs.gentoo.org/233910
+  for i in kat/*.c; do
+      sed -i "s:<linux/autoconf.h>:<generated/autoconf.h>:" $i
+  done
+
+  # fix 2.6.34 compile
+  patch -Np0 -i "${srcdir}/vhba-1.2.1-kernel-2.6.34.patch"
+
+  make -j1 KDIR=/usr/src/linux-${_kernver} || return 1
+  install -D vhba.ko "$pkgdir/lib/modules/${_kernver}/extra/vhba.ko" || return 1
+  sed -i -e "s/KERNEL_VERSION='.*'/KERNEL_VERSION='${_kernver}'/" "$startdir/vhba-module.install"
+}

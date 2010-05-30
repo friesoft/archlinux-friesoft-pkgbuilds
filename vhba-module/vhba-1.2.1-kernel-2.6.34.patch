@@ -1,0 +1,11 @@
+--- vhba.c	2010-04-26 19:35:04 +0000
++++ vhba.c	2010-04-26 19:35:20 +0000
+@@ -26,6 +26,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/miscdevice.h>
+ #include <linux/poll.h>
++#include <linux/slab.h>
+ #include <asm/uaccess.h>
+ #include <scsi/scsi.h>
+ #include <scsi/scsi_host.h>
+
