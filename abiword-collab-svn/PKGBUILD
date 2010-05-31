@@ -3,7 +3,7 @@
 
 pkgname=abiword-collab-svn
 _pkgname=abiword
-pkgver=2.8.4
+pkgver=2.8.5
 pkgrel=1
 pkgdesc="A fully-featured word processor (Development Version)"
 arch=('i686' 'x86_64')
