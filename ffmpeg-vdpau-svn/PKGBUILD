@@ -7,7 +7,7 @@ pkgdesc="Complete and free Internet live audio and video broadcasting solution f
 arch=('i686' 'x86_64')
 url="http://ffmpeg.mplayerhq.hu/"
 license=('GPL')
-depends=('lame' 'sdl' 'faad2' 'faac' 'zlib' 'imlib2' 'x264' 'libtheora')
+depends=('lame' 'sdl' 'faad2' 'faac' 'zlib' 'imlib2' 'x264' 'libtheora' 'xvidcore')
 makedepends=('subversion')
 provides=("ffmpeg=`date +%Y%m%d`")
 conflicts=('ffmpeg')
