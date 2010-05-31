@@ -2,10 +2,12 @@
 
 pkgname=abiword-collab-plugins
 pkgver=2.8.4
-pkgrel=1
+pkgrel=2
+pkgdesc="A fully-featured word processor (Development Version) - plugins including the collab plugins"
 arch=('i686' 'x86_64')
 license=('GPL')
 url="http://www.abisource.com"
+depends=('abiword')
 makedepends=('pkgconfig' 'fribidi' 'enchant' 'librsvg' 'wv' 'libgsf-gnome' 'aiksaurus'
         'gtkmathview' 'libsoup' 'link-grammar' 'libwpd' 'psiconv' 'libxslt' 'asio' 'loudmouth')
 options=('!makeflags' '!libtool')
