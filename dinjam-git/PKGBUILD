@@ -1,0 +1,66 @@
+# Contributor: Bernhard Friedreich <friesoft@gmail.com>
+
+pkgname=dinjam-git
+pkgver=20100601
+pkgrel=1
+pkgdesc="Dinjam is not just another data modeller"
+arch=('i686' 'x86_64')
+license=('GPL')
+url="http://sourceforge.net/projects/dinjam"
+depends=('qt4')
+makedepends=('cmake' 'intltool')
+replaces=('dinjam' 'libnetworkmanager')
+provides=('dinjam')
+conflicts=('dinjam')
+
+_gitroot="git://gitorious.org/dinjam/dinjam.git"
+_gitname="dinjam"
+
+build() {
+    cd ${srcdir}
+
+    msg "Connecting to gitorious.org GIT server...."
+
+    if [ -d ${srcdir}/$_gitname ] ; then
+    cd $_gitname && git pull origin
+    msg "The local files are updated."
+    else
+    git clone $_gitroot
+    fi
+
+    msg "GIT checkout done or server timeout"
+    msg "Starting make..."
+
+    mkdir ${srcdir}/${_gitname}/$_gitname-build
+    cd ${srcdir}/${_gitname}/$_gitname-build
+
+    cmake .. \
+            -DSCRIPT_INSTALL_DIR=/usr/share/dinjam/scripts \
+            -DCONFIG_INSTALL_DIR=/usr/share/dinjam/config \
+            -DLOCALE_INSTALL_DIR=/usr/share/dinjam/translations \
+            -DDATA_INSTALL_DIR=/usr/share/dinjam/data \
+            -DDINJAM_BIN_DIR=/usr/bin \
+            -DSCRIPT_INSTALL_DIR=/tmp
+
+    make || return 1
+
+    mkdir -p "${pkgdir}/usr/bin"
+    mkdir -p "${pkgdir}/usr/share/dinjam/translations"
+    mkdir -p "${pkgdir}/usr/share/dinjam/scripts"
+    mkdir -p "${pkgdir}/usr/share/dinjam/config"
+    mkdir -p "${pkgdir}/usr/share/dinjam/data"
+
+    install -m777 "${srcdir}/${_gitname}/bin/Dinjam" "${pkgdir}/usr/bin/dinjam" || return 1
+
+    install -d -m644 "${srcdir}/${_gitname}/scripts/Welcome/" "${pkgdir}/usr/share/dinjam/scripts/Welcome/" || return 1
+    cp -R "${srcdir}/${_gitname}/scripts/Welcome/" "${pkgdir}/usr/share/dinjam/scripts/" || return 1
+
+    install -d -m644 "${srcdir}/${_gitname}/scripts/Base/" "${pkgdir}/usr/share/dinjam/scripts/Base/" || return 1
+    cp -R "${srcdir}/${_gitname}/scripts/Base/" "${pkgdir}/usr/share/dinjam/scripts/" || return 1
+
+    install -m644 ${srcdir}/${_gitname}/translations/dinjam_de.qm "${pkgdir}/usr/share/dinjam/translations/" || return 1
+    install -m644 ${srcdir}/${_gitname}/translations/dinjam_en.qm "${pkgdir}/usr/share/dinjam/translations/" || return 1
+
+    rm -rf ${srcdir}/$_gitname-build
+}
+
