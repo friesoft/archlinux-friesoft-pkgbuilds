@@ -14,7 +14,7 @@ options=('!makeflags' '!libtool')
 provides=('abiword-plugins')
 conflicts=('abiword-plugins')
 source=(http://www.abisource.com/downloads/abiword/${pkgver}/source/abiword-${pkgver}.tar.gz)
-md5sums=('f782ecb8e07d07ec179f7a143353cc29')
+md5sums=('c0523ade1bc515338473909f5e9eb5dd')
 
 build() {
   cd "${srcdir}/abiword-${pkgver}"
