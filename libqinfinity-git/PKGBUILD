@@ -8,13 +8,15 @@ pkgdesc="A Qt4 interface to libinfinity"
 arch=('i686' 'x86_64')
 url="http://greghaynes.github.com/libqinfinity"
 license=('GPL')
-depends=('cmake>=2.6' 'libinfinity>=0.4.0' 'qt>=4.5')
+depends=('cmake>=2.6' 'libinfinity-git' 'qt>=4.5')
 optdepends=()
 provides=('libqinfinity')
 
 build() {
-  git clone git://gitorious.org/libqinfinity/mainline.git libqinfinity
-  cd $srcdir/libqinfinity
+  cd $srcdir
+  git clone git://gitorious.org/libqinfinity/libqinfinity.git libqinfinity
+  cd libqinfinity
+
   cmake . -DCMAKE_INSTALL_PREFIX=/usr
   make || return 1
   make DESTDIR="${pkgdir}" install || return 1
