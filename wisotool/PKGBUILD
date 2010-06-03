@@ -1,0 +1,17 @@
+# Contributor: Bernhard Friedreich <friesoft@gmail.com>
+
+pkgname=wisotool
+pkgver=20100603
+pkgrel=1
+pkgdesc="Script to install various games"
+url="http://wiki.winehq.org/wisotool"
+license=('LGPL')
+arch=('i686' 'x86_64')
+depends=('wine' 'unzip')
+[ "$CARCH" == "x86_64" ] && depends=('bin32-wine' 'unzip')
+
+build() {
+  cd $srcdir
+  wget http://winezeug.googlecode.com/svn/trunk/wisotool
+  install -Dm755 $srcdir/wisotool $pkgdir/usr/bin/wisotool
+}
