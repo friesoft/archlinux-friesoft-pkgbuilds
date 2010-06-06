@@ -1,0 +1,20 @@
+# Maintainer: Gregory Haynes <greg@greghaynes.net>
+# Contributor: Bernhard Friedreich <friesoft@gmail.com>
+
+pkgname=skype-kde-notifications-git
+pkgver=20100606
+pkgrel=1
+pkgdesc="Displaying Skype incoming messages with KDE4 visual notifications"
+arch=('i686' 'x86_64')
+url="http://sickill.net"
+license=('GPL')
+depends=('skype' 'python' 'skype4py')
+provides=('skype-kde-notifications')
+
+build() {
+  cd $srcdir
+  git clone http://github.com/sickill/skype-kde-notifications.git skype-kde-notifications
+  cd skype-kde-notifications
+
+  install -D -m755 skype-kde-notifications.py "$pkgdir/usr/share/skype/skype-kde-notifications.py" || return 1
+}
