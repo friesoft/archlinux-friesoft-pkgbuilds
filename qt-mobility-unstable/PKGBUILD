@@ -1,0 +1,47 @@
+# Maintainer: Perry3D <perry3d@gmail.com>
+# Contributor: Bernhard Friedreich <friesoft@gmail.com>
+
+pkgname=qt-mobility-unstable
+pkgver=1.1.0
+pkgrel=1
+pkgdesc="It is a project within Nokia that is creating a new suite of Qt APIs for mobile device functionality. These APIs will enable cross-platform mobile application development."
+arch=('x86_64' 'i686')
+url="http://qt.nokia.com"
+license=('LGPL')
+groups=()
+depends=('qt>=4.6' 'perl' 'bluez')
+makedepends=()
+optdepends=()
+provides=()
+conflicts=()
+replaces=()
+backup=()
+options=()
+install=
+changelog=
+source=(http://get.qt.nokia.com/qt/solutions/qt-mobility-opensource-src-$pkgver-tp.tar.gz)
+noextract=()
+md5sums=('1a3fcf21466feeb47eefa404b0386512')
+
+build() {
+  cd "$srcdir/qt-mobility-opensource-src-${pkgver}"-tp
+
+  ./configure -prefix /usr \
+    -plugindir /usr/lib/qt/plugins \
+    -examples \
+    -demos \
+    -silent \
+    -tests
+    #-maemo5 \
+    #-maemo6 \
+
+  make
+}
+
+package() {
+  cd "$srcdir/qt-mobility-opensource-src-${pkgver}"-tp
+
+  make INSTALL_ROOT="$pkgdir/" install
+}
+
+# vim:set ts=2 sw=2 et:

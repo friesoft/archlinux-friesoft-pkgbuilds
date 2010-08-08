@@ -17,4 +17,6 @@ build() {
   cd skype-kde-notifications
 
   install -D -m755 skype-kde-notifications.py "$pkgdir/usr/share/skype/skype-kde-notifications.py" || return 1
+
+#skype - notifications - advanced - all events: python /usr/share/skype/skype-kde-notifications.py -e”%type” -n”%sname” -f”%fname” -p”%fpath” -m”%smessage” -s%fsize -u%sskype
 }

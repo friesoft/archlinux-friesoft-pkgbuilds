@@ -2,8 +2,8 @@
 # Contributor: Alexander Baldeck <alexander@archlinux.org>
 # Maintainer: Jan de Groot <jgc@archlinux.org>
 pkgname=xulrunner-qt
-pkgver=1.9.2.3
-_ffoxver=3.6.3
+pkgver=1.9.2.8
+_ffoxver=3.6.8
 pkgrel=2
 pkgdesc="Mozilla Runtime Environment"
 arch=(i686 x86_64)
@@ -26,7 +26,7 @@ source=(http://releases.mozilla.org/pub/mozilla.org/firefox/releases/${_ffoxver}
         enable-x86_64-tracemonkey.patch
         startup-notification.patch)
 
-md5sums=('5e4541ab23084b7b14ba228291ce2688'
+md5sums=('0ee5f14fd8be07513d16131027ebcb61'
          'c6ea05a012f365bf1f2f2570b6bd913d'
          '17d375f9e00c192b5ed314216a18695e'
          '2d2d7143a4e0bfe71149a51f8dbbab2f'
@@ -41,29 +41,37 @@ build() {
   cd "${srcdir}/mozilla-1.9.2"
   cp "${srcdir}/mozconfig" .mozconfig
 
+  echo "-- PATCH -- firefox-qt.patch"
   patch -Np1 -i "${srcdir}/firefox-qt.patch"
 
   #Upstream patch. Still not applied to 1.9.2
+  echo "-- PATCH -- mozilla-ps-pdf-simplify-operators.patch"
   patch -Np1 -i "${srcdir}/mozilla-ps-pdf-simplify-operators.patch"
 
   #fix libdir/sdkdir - fedora
+  echo "-- PATCH -- mozilla-pkgconfig.patch"
   patch -Np1 -i "${srcdir}/mozilla-pkgconfig.patch"
 
   #Fix stub launcher - archlinux
+  echo "-- PATCH -- fix stub launcher"
   patch -Np0 -i "${srcdir}/fix-mozilla-launcher.patch"
 
   #Force installation to the same path for every version
+  echo "-- PATCH -- xulrunner-version.patch"
   patch -Np1 -i "${srcdir}/xulrunner-version.patch"
 
   #Fix compile with libpng 1.4
+  echo "-- PATCH -- xulrunner-png14.patch"
   patch -Np0 -i "${srcdir}/xulrunner-png14.patch"
 
   #Tracemonkey for x86_64
+  echo "-- PATCH -- enable-x86_64-tracemonkey.patch"
   patch -Np0 -i "${srcdir}/enable-x86_64-tracemonkey.patch"
 
   #https://bug534845.bugzilla.mozilla.org/attachment.cgi?id=417666
   #https://bugzilla.mozilla.org/show_bug.cgi?id=534845
-  patch -Np1 -i "${srcdir}/startup-notification.patch"
+  #echo "-- PATCH -- startup-notification.patch"
+  #patch -Np1 -i "${srcdir}/startup-notification.patch"
 
   unset CFLAGS
   unset CXXFLAGS

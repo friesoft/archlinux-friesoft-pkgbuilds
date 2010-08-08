@@ -1,10 +1,11 @@
 # $Id: PKGBUILD 73155 2010-03-23 10:23:39Z jgc $
 # Contributor: Jakub Schmidtke <sjakub@gmail.com>
+# Contributor: Bernhard Friedreich <friesoft@gmail.com>
 
 pkgname=firefox-qt
-pkgver=3.6.3
-pkgrel=2
-_xulver=1.9.2.3
+pkgver=3.6.8
+pkgrel=1
+_xulver=1.9.2.8
 pkgdesc="Standalone web browser from mozilla.org"
 arch=(i686 x86_64)
 license=('MPL' 'GPL' 'LGPL')
