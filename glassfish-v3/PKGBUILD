@@ -1,7 +1,7 @@
 # Contributor: Bernhard Friedreich <friesoft@gmail.com>
 
 pkgname=glassfish-v3
-pkgver=3.0
+pkgver=3.0.1
 pkgrel=1
 pkgdesc="Application server (like tomcat) based on Java EE 6 from Sun"
 url="https://glassfish.dev.java.net/"
@@ -12,8 +12,8 @@ depends=(jre apache-ant)
 makedepends=(jdk)
 arch=(i686 x86_64)
 options=(!strip)
-source=(http://download.java.net/glassfish/v3/release/glassfish-v3.zip)
-md5sums=('537b1c6574316ebc4dc69ba6dd26e213')
+source=(http://download.java.net/glassfish/v3u1/release/glassfish-3.0.1.zip)
+md5sums=('a24f6ca15bb6b38d4cb2998d607abcde')
 
 build() {
     mkdir $startdir/pkg/opt
