@@ -9,7 +9,7 @@ arch=('x86_64' 'i686')
 url="http://qt.nokia.com"
 license=('LGPL')
 groups=()
-depends=('qt>=4.6' 'perl' 'bluez')
+depends=('qt>=4.7' 'perl' 'bluez')
 makedepends=()
 optdepends=()
 provides=()
@@ -41,7 +41,9 @@ build() {
 package() {
   cd "$srcdir/qt-mobility-opensource-src-${pkgver}"-tp
 
-  make INSTALL_ROOT="$pkgdir/" install
+  install -d ${pkgdir}/usr/imports/QtMobility
+
+  make INSTALL_ROOT=$pkgdir install
 }
 
 # vim:set ts=2 sw=2 et:
