@@ -9,16 +9,6 @@ diff -ru qtscriptgenerator/generator/generator.qrc qtscriptgenerator-build/gener
  <file alias="typesystem_webkit.txt">typesystem_webkit.xml</file>
  <file alias="typesystem_xmlpatterns.txt">typesystem_xmlpatterns.xml</file>
  <file>parser/rpp/pp-qt-configuration</file>
-diff -ru qtscriptgenerator/generator/parser/rpp/pp-internal.h qtscriptgenerator-build/generator/parser/rpp/pp-internal.h
---- qtscriptgenerator/generator/parser/rpp/pp-internal.h	2009-05-14 12:52:18.000000000 -0400
-+++ qtscriptgenerator-build/generator/parser/rpp/pp-internal.h	2009-05-14 13:20:08.000000000 -0400
-@@ -16,6 +16,7 @@
- #define PP_INTERNAL_H
- 
- #include <algorithm>
-+#include <stdio.h>
- 
- namespace rpp {
  
 diff -ru qtscriptgenerator/qtbindings/qtbindings.pro qtscriptgenerator-build/qtbindings/qtbindings.pro
 --- qtscriptgenerator/qtbindings/qtbindings.pro	2009-05-14 12:52:18.000000000 -0400

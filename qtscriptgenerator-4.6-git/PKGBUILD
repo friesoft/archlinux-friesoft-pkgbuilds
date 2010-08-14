@@ -2,7 +2,7 @@
 # Contributor: Bernhard Friedreich <friesoft@gmail.com>
 
 pkgname=qtscriptgenerator-git-4.6
-pkgver=20100318
+pkgver=20100814
 pkgrel=1
 
 pkgdesc="A tool that generates Qt 4.6 bindings for Qt Script."
@@ -10,7 +10,7 @@ url="http://qt.gitorious.org/qt-labs/qtscriptgenerator"
 license=('GPL')
 
 source=( 'qtscriptgenerator-git.patch' )
-md5sums=('6f6986a95c42794028d99675f24ec8b2')
+md5sums=('323f52267f2fe393d00c644634d992dc')
 
 arch=('i686' 'x86_64')
 
