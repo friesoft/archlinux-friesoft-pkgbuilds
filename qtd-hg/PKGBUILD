@@ -1,14 +1,15 @@
 pkgname=qtd-hg
-pkgver=0.1
+pkgver=20100814
 pkgrel=1
 pkgdesc="Bindings of Qt GUI library to D programming language"
-arch=('i686')
+arch=('i686' 'x86_64')
 url="http://www.dsource.org/projects/qtd"
 license=("Boost")
 depends=('dmd' 'libtango' 'qt')
-makedepends=('svn')
+makedepends=('mercurial')
 provides=('qtd')
 conflicts=('qtd')
+options=('!makeflags')
 
 _hgrepo=http://hg.dsource.org/projects/qtd/
 _hgmod=qtd
@@ -22,14 +23,19 @@ build() {
   fi
 
   msg "hg checkout done or server timeout"
-  msg "Starting ant build process..."
 
   cd $srcdir/$_hgmod
 
-  mkdir build
-  cd build
+  # enter build directory
+  mkdir build_dir
+  cd build_dir || return 1
 
-  cmake -DCMAKE_INSTALL_PREFIX=/usr .. || return 1
+  # overwrite makepkg.conf flags as those may kill the compile -.-
+unset CFLAGS
+    unset CXXFLAGS
+
+  cmake -DCMAKE_INSTALL_PREFIX=/usr ../
+
   make || return 1
   DESTDIR=${pkgdir} make install || return 1
 }

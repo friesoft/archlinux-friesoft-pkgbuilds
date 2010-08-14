@@ -1,11 +1,11 @@
 # $Id$
 # Contributor: friesoft <friesoft@gmail.com>
-# This package provides the master-stable branch of Qt
+# This package provides the master branch of Qt
 
 pkgname=qt-git
 pkgver=20100814
 pkgrel=1
-pkgdesc="The C++ Qt GUI framework - current development snapshot (master-stable branch)"
+pkgdesc="The C++ Qt GUI framework - current development snapshot (master branch)"
 arch=('i686' 'x86_64')
 url="http://www.qtsoftware.com"
 license=('GPL3' 'LGPL')

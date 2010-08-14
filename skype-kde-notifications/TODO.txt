@@ -1,0 +1,7 @@
+skype kde integration
+
+systray
+  applet?
+  statusnotifiericon?
+
+notifications using python
