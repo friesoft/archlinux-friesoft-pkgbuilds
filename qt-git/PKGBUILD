@@ -2,8 +2,8 @@
 # Contributor: friesoft <friesoft@gmail.com>
 # This package provides the master-stable branch of Qt
 
-pkgname=qt-master-stable-git
-pkgver=20091107
+pkgname=qt-git
+pkgver=20100814
 pkgrel=1
 pkgdesc="The C++ Qt GUI framework - current development snapshot (master-stable branch)"
 arch=('i686' 'x86_64')
@@ -11,22 +11,20 @@ url="http://www.qtsoftware.com"
 license=('GPL3' 'LGPL')
 
 depends=('libpng' 'mesa' 'fontconfig' 'libtiff' 'libmng' 'sqlite3' 'libxrandr' 'glib2' 'libxi' 'dbus' 'libxcursor' 'libxinerama' 'libxrender' 'ca-certificates')
-optdepends=('postgresql-libs' 'libmysqlclient' 'unixodbc-compat')                                    ## unixodbc-compat can also be replaced by either unixodbc or iodbc
-makedepends=('inputproto' 'postgresql-libs' 'mysql' 'unixodbc-compat' 'cups' 'libxfixes' 'gtk2')
+optdepends=('postgresql-libs' 'libmysqlclient' 'unixodbc')
+makedepends=('inputproto' 'postgresql-libs' 'mysql' 'unixodbc' 'cups' 'libxfixes' 'gtk2')
 provides=('qt' 'qt4' 'qt-doc' 'qt=4.7.0' 'qt4=4.7.0')
 replaces=('qt' 'qt4' 'qt-doc' 'qt4-git' 'qt4-doc')
 conflicts=('qt' 'qt4' 'qt-doc' 'qt4-git' 'qt4-doc')
 options=('!libtool' 'docs')
 
 # desktop files and qdoc3 patch -- needed for qtdesigner-git build
-source=('assistant.desktop' 'designer.desktop' 'linguist.desktop' 'qtconfig.desktop' 'qdoc3.patch' 'ca-certificates.patch')
+source=('assistant.desktop' 'designer.desktop' 'linguist.desktop' 'qtconfig.desktop')
 
 md5sums=('83d1fd8da6a350dc1f1459d0c8cd226b'
          'bb1afccb14bcad7e7dac826612f5dc9c'
          '038d7083823c2600c97239fe088b2f4b'
-         '8618e4b1875143fab8ad244688b2aae7'
-         '69593f795f5a6406cbec31749b6ffc2e'
-         'b443cbb327ae11678b71886f793303cc')
+         '8618e4b1875143fab8ad244688b2aae7')
 
 _gitroot="git://gitorious.org/qt/qt.git"
 _gitname="qt"
@@ -36,7 +34,8 @@ build() {
 
           if [ -d ${srcdir}/$_gitname ] ; then
                     cd $_gitname
-                    git pull git://gitorious.org/qt/qt.git master-stable
+                    git reset --hard HEAD
+                    git pull origin 
 
                     msg "The local files have been updated to the current revision"
 
@@ -45,15 +44,6 @@ build() {
                     git clone $_gitroot
 
                     cd $srcdir/$_gitname
-
-                    # branch: master-stable (master branch which should always compile)
-                    git checkout -b master-stable
-
-                    # apply qdoc3 patch
-                    patch -p1 -i $srcdir/qdoc3.patch
-
-                    # use system ssl cert bundle
-                    patch -p1 -i $srcdir/ca-certificates.patch
 
                     sed -i "s|-O2|$CXXFLAGS|" mkspecs/common/g++.conf
                     sed -i "/^QMAKE_RPATH/s| -Wl,-rpath,||g" mkspecs/common/g++.conf
@@ -65,7 +55,7 @@ build() {
           export PATH=${QT4DIR}/bin:${PATH}
           export LD_LIBRARY_PATH=${QT4DIR}/lib:${LD_LIBRARY_PATH}
 
-          ./configure -confirm-license -opensource \
+          ./configure -confirm-license -opensource  -v \
                     -prefix /usr \
                     -sysconfdir /etc \
                     -plugindir /usr/lib/qt/plugins \
@@ -98,7 +88,6 @@ build() {
                     -reduce-relocations \
                     -gtkstyle \
                     -opengl \
-                    -openvg \
                     -glib \
                     -cups \
                     -iconv \
