@@ -1,21 +1,21 @@
 # Contributor: Bernhard Friedreich <friesoft@gmail.com>
 
-pkgname=qt-components-git
+pkgname=meegotouch-theme-git
 pkgver=20100814
 pkgrel=1
 
-pkgdesc="Research project to create Qt/QML components and models."
-url="http://gitorious.org/qt-components"
+pkgdesc=""
+url="http://meego.gitorious.org/meegotouch/meegotouch-theme"
 license=('GPL')
 arch=('i686' 'x86_64')
-depends=('qt>=4.7' 'libmeegotouch')
+depends=('qt>=4.7')
 makedepends=('git')
 
-provides=( "qt-components-git=${pkgver}" "qt-components=${pkgver}" )
-conflicts=( "qt-components" )
+provides=( "meegotouch-theme-git=${pkgver}" "meegotouch-theme=${pkgver}" )
+conflicts=( "meegotouch-theme" )
 
-_gitroot="git://gitorious.org/qt-components/qt-components.git"
-_gitname="qt-components-git"
+_gitroot="git://gitorious.org/meegotouch/meegotouch-theme.git"
+_gitname="meegotouch-theme-git"
 
 build() {
     # Export the include dir
@@ -31,7 +31,11 @@ build() {
         cd ${_gitname}
     fi
 
-    qmake -config mx -config meego || return 1
+    qmake
     make || return 1
+
     make INSTALL_ROOT=$pkgdir install || return 1
+
+    # Remove known zero-length files
+    find ${pkgdir}/usr/share/themes -type f -size 0c -exec rm -f {} ';'
 }
