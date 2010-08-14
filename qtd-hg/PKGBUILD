@@ -5,7 +5,7 @@ pkgdesc="Bindings of Qt GUI library to D programming language"
 arch=('i686' 'x86_64')
 url="http://www.dsource.org/projects/qtd"
 license=("Boost")
-depends=('dmd' 'libtango' 'qt')
+depends=('dmd2' 'libphobos2' 'qt')
 makedepends=('mercurial')
 provides=('qtd')
 conflicts=('qtd')
@@ -27,12 +27,16 @@ build() {
   cd $srcdir/$_hgmod
 
   # enter build directory
-  mkdir build_dir
-  cd build_dir || return 1
+  if [ -d build_dir ]; then
+    cd build_dir
+  else
+    mkdir build_dir
+    cd build_dir
+  fi
 
   # overwrite makepkg.conf flags as those may kill the compile -.-
-unset CFLAGS
-    unset CXXFLAGS
+  unset CFLAGS
+  unset CXXFLAGS
 
   cmake -DCMAKE_INSTALL_PREFIX=/usr ../
 
