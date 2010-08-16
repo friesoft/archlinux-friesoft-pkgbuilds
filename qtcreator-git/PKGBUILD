@@ -52,7 +52,8 @@ build() {
     mkdir -p share/doc/qtcreator
     touch share/doc/qtcreator/qtcreator.qch
 
-    qmake ${srcdir}/${_gitname}/qtcreator.pro QT_PRIVATE_HEADERS=/daten/Daten/Linux/friesoft-github/qt-git/src/qt/include \
+    # to enable the qml designer you need to add QT_PRIVATE_HEADERS=/path/to/your/qt/source/include to the qmake command
+    qmake ${srcdir}/${_gitname}/qtcreator.pro \
     && make --quiet \
     && make INSTALL_ROOT="${pkgdir}/usr" install || return 1
     install -Dm644 ${srcdir}/qtcreator.desktop ${pkgdir}/usr/share/applications/qtcreator.desktop || return 1
