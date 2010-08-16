@@ -9,33 +9,34 @@ license=('GPL')
 arch=('i686' 'x86_64')
 depends=('wine' 'zlib' 'openssl')
 [ "$CARCH" == "x86_64" ] && depends=('bin32-wine' 'zlib' 'openssl')
+install=qt-symbian.install
 
 build() {
   cd $srcdir
 
-  mkdir downloads && cd downloads
+   if [ -d downloads ]; then
+    cd downloads
+  else
+    mkdir downloads
+    cd downloads
+  fi
 
-  wget http://sw.nokia.com/id/577ad48d-290c-4bb5-8bdf-779ea8a5bc6c/S60_5th_Edition_SDK_v1_0_en.zip
-  wget http://sw.nokia.com/id/5efc5664-d1d1-45d4-be71-42061d021e14/s60_open_c_cpp_plug_in_v1_7_en.zip
-  wget http://www.codesourcery.com/public/gnu_toolchain/arm-none-symbianelf/gnu-csl-arm-2005Q1C-arm-none-symbianelf-i686-pc-linux-gnu.tar.bz2
-  wget http://martin.st/symbian/gnupoc-package-1.15.tar.gz
-  wget http://franciscoalecrim.com/lizardo/gnupoc_1.15_installer_v2.sh
-  wget http://get.qt.nokia.com/qt/source/qt-symbian-opensource-4.6.3.exe
-  wget http://get.qt.nokia.com/qt/solutions/qt-mobility-symbian-opensource-1.0.0.zip
-  wget http://get.qt.nokia.com/nokiasmartinstaller/nokiasmartinstallerforsymbian-0.18beta.zip
-  wget http://franciscoalecrim.com/abinader/qt_for_symbian_4.6.3_all_in_one_linux_installer_v2.sh
+  wget -c -O S60_5th_Edition_SDK_v1_0_en.zip http://sw.nokia.com/id/577ad48d-290c-4bb5-8bdf-779ea8a5bc6c/S60_5th_Edition_SDK_v1_0_en.zip
+  wget -c -O s60_open_c_cpp_plug_in_v1_6_en.zip http://qdrive.net/index.php/page-file_share-choice-download_file-id_file-161544-ce-0
+  wget -c http://www.codesourcery.com/public/gnu_toolchain/arm-none-symbianelf/gnu-csl-arm-2005Q1C-arm-none-symbianelf-i686-pc-linux-gnu.tar.bz2
+  wget -c http://martin.st/symbian/gnupoc-package-1.15.tar.gz
+  wget -c http://franciscoalecrim.com/lizardo/gnupoc_1.15_installer_v2.sh
+  wget -c http://get.qt.nokia.com/qt/source/qt-symbian-opensource-4.6.3.exe
+  wget -c http://get.qt.nokia.com/qt/solutions/qt-mobility-symbian-opensource-1.0.0.zip
+  wget -c http://get.qt.nokia.com/nokiasmartinstaller/nokiasmartinstallerforsymbian-0.18beta.zip
+  wget -c http://franciscoalecrim.com/abinader/qt_for_symbian_4.6.3_all_in_one_linux_installer_v2.sh
 
   install -d $pkgdir/opt/gnupoc1_15
   ./gnupoc_1.15_installer_v2.sh $srcdir/downloads $pkgdir/opt/gnupoc1_15 5.0
 
   install -d $pkgdir/opt/qt463symbian
-  export PATH=$pkgdir/opt/qt463symbian/bin:$PATH
-  ./qt_for_symbian_4.6.3_all_in_one_linux_installer_v1.sh $srcdir/downloads $pkgdir/opt/qt463symbian
+  export EPOCROOT=$pkgdir/opt/gnupoc1_15/symbian-sdks/5.0/
+  export PATH=$pkgdir/opt/qt463symbian/bin:$pkgdir/opt/gnupoc1_15/bin:$PATH
 
-  echo -n 'Add those environment variables to your .bashrc to use Qt for Symbian'
-  echo -n 'export PATH=/opt/gnupoc1_15/bin:$PATH'
-  echo -n 'export EPOCROOT=/opt/gnupoc1_15/symbian-sdks/5.0/'
-  echo -n 'export PATH=/opt/qt463symbian/bin:$PATH'
-  echo -n 'Before using Qt for symbian QMAKESPEC must be unset (which is not set by default)'
-  echo -n 'unset QMAKESPEC'
+  ./qt_for_symbian_4.6.3_all_in_one_linux_installer_v2.sh $srcdir/downloads $pkgdir/opt/qt463symbian
 }
