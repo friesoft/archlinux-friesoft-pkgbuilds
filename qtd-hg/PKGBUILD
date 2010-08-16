@@ -17,7 +17,8 @@ _hgmod=qtd
 build() {
   
   if [ -d $_hgmod/.hg ]; then
-    (cd $_hgmod && hg pull )
+    cd $_hgmod
+    hg pull
   else
     hg clone $_hgrepo $_hgmod
   fi
