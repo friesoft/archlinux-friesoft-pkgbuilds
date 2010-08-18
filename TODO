@@ -1,14 +1,3 @@
-Qt
--------------------
-libmeegotouch-git
-meegotouch-theme-git
-
-qt-components-git
-
-qt-mobility-git
-
-___________________
-
 Firefox
 -------------------
 xulrunner-qt
@@ -21,4 +10,3 @@ ___________________
 Other
 -------------------
 skype-kde-notifications
-
