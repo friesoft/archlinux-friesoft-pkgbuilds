@@ -3,7 +3,7 @@
 # This package provides the master branch of Qt
 
 pkgname=qt-git
-pkgver=20100814
+pkgver=20100826
 pkgrel=1
 pkgdesc="The C++ Qt GUI framework - current development snapshot (master branch)"
 arch=('i686' 'x86_64')
@@ -90,7 +90,7 @@ build() {
                     -opengl \
                     -glib \
                     -cups \
-                    -iconv \
+                    -no-iconv \
                     -xinerama \
                     -xcursor \
                     -xfixes \
