@@ -22,7 +22,7 @@ build() {
   ./configure --prefix=/usr \
               --enable-plugins=collab --enable-collab-backend-service --enable-shave || return 1
 
-  cd "${srcdir}/${pkgbase}-${pkgver}/plugins"
+  cd "${srcdir}/abiword-${pkgver}/plugins"
   make DESTDIR="${pkgdir}" install || return 1
 
   # Remove files conflicting with abiword package
