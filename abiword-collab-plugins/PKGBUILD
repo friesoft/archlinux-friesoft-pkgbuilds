@@ -1,7 +1,7 @@
 # Maintainer: Bernhard Friedreich <friesoft@gmail.com>
 
 pkgname=abiword-collab-plugins
-pkgver=2.8.5
+pkgver=2.8.6
 pkgrel=1
 pkgdesc="A fully-featured word processor (Development Version) - plugins including the collab plugins"
 arch=('i686' 'x86_64')
