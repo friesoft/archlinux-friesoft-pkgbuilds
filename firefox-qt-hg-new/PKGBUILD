@@ -1,0 +1,59 @@
+# Contributor: MutantMonkey <mutantmonkey@gmail.com>
+pkgname=firefox-hg-qt
+pkgver=48885
+pkgrel=1
+_ffver="4.0b4pre"
+pkgdesc="Standalone web browser from mozilla.org, latest development version"
+url="http://www.mozilla.org/projects/firefox/"
+arch=('i686' 'x86_64')
+license=('MPL' 'GPL' 'LGPL')
+depends=('gtk2>=2.16.2' 'gcc-libs>=4.4.0' 'libidl2>=0.8.13' 'mozilla-common' 'nss>=3.12.3' 'nspr>=4.8' 'libxt' 'hunspell>=1.2.8' 'startup-notification>=0.10' 'pango>=1.24.0' 'desktop-file-utils' 'cairo>=1.8.0' 'libpng>=1.2.24-3' 'libjpeg' 'lcms' 'mesa' 'libnotify' 'libproxy' 'qt')
+makedepends=('mercurial' 'zip' 'pkgconfig' 'diffutils' 'imagemagick' 'python' 'xorg-server' 'autoconf2.13' 'wireless_tools')
+optdepends=('wireless_tools')
+provides=("firefox=${_ffver}")
+install=firefox.install
+source=(mozconfig
+        100-system-hunspell-corrections.patch
+        firefox-hg-qt.desktop
+        firefox-hg-qt-safe.desktop
+        firefox.sh)
+md5sums=('34181324e42b4a0ad5155dd23ab16039'
+         '5efd6772ed0ecf8eddec5d5650191d3c'
+         '4022581eb05405b82c489d5ea16b1a17'
+         '9271601e9b9837c8f3fc3a35367ea3aa'
+         '9f89ce44e4202783779c4bc33f10c176')
+sha256sums=('ebd43a076441e4199714114e23bf6d8449037c1d859c83f7a01a81c3c61160b2'
+            '00c854d817b878270f9362c0ab432e210f8d4b5a01a1b8b68c17012c16c7a77e'
+            '5e805fd15d9937ed219afbf3e30c7d39dd613733f6e60d011e6087f765765d10'
+            'e6d3f3ba8b8c3340de1f2456e6812084a379c521bb01965b34f9559b59a6f05a'
+            '5e2cbdf36bb021504e2e8fd8400637301237f12d62820a9d0359ee5e68591609')
+
+_hgroot="http://hg.mozilla.org"
+_hgrepo=mozilla-central
+
+build() {
+  cd ${srcdir}/mozilla-central
+  cp ${srcdir}/mozconfig .mozconfig
+  
+  # update firefox-qt.sh launcher with proper Firefox version
+  sed -i "s/firefox-hg/firefox-${_ffver}/g" ${srcdir}/firefox-qt.sh
+  
+  #fix build with system hunspell - gentoo
+  #patch -Np0 -i "${srcdir}/100-system-hunspell-corrections.patch" || return 1
+  
+  unset CFLAGS
+  unset CXXFLAGS
+  export LDFLAGS="-Wl,-rpath,/usr/lib/firefox-${_ffver}"
+  
+  make -j1 -f client.mk MOZ_MAKE_FLAGS="${MAKEFLAGS}" || return 1
+  make -j1 DESTDIR=${pkgdir} install || return 1
+
+  rm -f ${pkgdir}/usr/bin/firefox
+  install -m755 ${srcdir}/firefox-qt.sh ${pkgdir}/usr/bin/firefox-hg-qt || return 1
+
+  install -m755 -d ${pkgdir}/usr/share/applications
+  install -m755 -d ${pkgdir}/usr/share/pixmaps
+  install -m644 ${srcdir}/mozilla-central/browser/branding/nightly/default48.png ${pkgdir}/usr/share/pixmaps/firefox-hg.png || return 1
+  install -m644 ${srcdir}/firefox-hg-qt.desktop ${pkgdir}/usr/share/applications/ || return 1
+  install -m644 ${srcdir}/firefox-hg-qt-safe.desktop ${pkgdir}/usr/share/applications/ || return 1
+}
