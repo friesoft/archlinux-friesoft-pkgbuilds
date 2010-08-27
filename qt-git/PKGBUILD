@@ -4,7 +4,7 @@
 
 pkgname=qt-git
 pkgver=20100826
-pkgrel=1
+pkgrel=2
 pkgdesc="The C++ Qt GUI framework - current development snapshot (master branch)"
 arch=('i686' 'x86_64')
 url="http://www.qtsoftware.com"
