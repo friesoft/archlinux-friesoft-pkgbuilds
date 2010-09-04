@@ -1,0 +1,22 @@
+pkgname=openvpn-easy-rsa
+pkgver=2.1.3
+pkgrel=1
+pkgdesc="A small RSA key management package that comes with OpenVPN"
+url="http://openvpn.net/"
+license="GPL"
+depends=(bash openssl)
+makedepends=()
+conflicts=()
+replaces=()
+backup=()
+install=
+arch=(i686 x86_64)
+source=(http://openvpn.net/release/openvpn-2.1.3.tar.gz)
+md5sums=('7486d3e270ba4b033e311d3e022a0ad7')
+
+build() {
+  cd $startdir/src/openvpn-2.1.3/easy-rsa
+  mkdir -p $startdir/pkg/usr/share/doc/openvpn/examples/easy-rsa
+  cp -a 2.0/* $startdir/pkg/usr/share/doc/openvpn/examples/easy-rsa
+}
+
