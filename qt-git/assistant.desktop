@@ -1,7 +1,7 @@
 #!/usr/bin/env xdg-open
 [Desktop Entry]
 Exec=/usr/bin/assistant
-Name=Qt Master Stable - Assistant
+Name=Qt Assistant
 GenericName=Qt Document Browser
 Icon=/usr/share/pixmaps/assistant.png
 Terminal=false

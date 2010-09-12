@@ -1,6 +1,6 @@
 #!/usr/bin/env xdg-open
 [Desktop Entry]
-Name=Qt Master Stable - Config
+Name=Qt Config
 Comment=Configure Qt behavior, styles, fonts
 Exec=/usr/bin/qtconfig
 Icon=/usr/share/pixmaps/qtlogo

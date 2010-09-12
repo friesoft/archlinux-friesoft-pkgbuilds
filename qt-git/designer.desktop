@@ -1,7 +1,7 @@
 #!/usr/bin/env xdg-open
 [Desktop Entry]
 Exec=/usr/bin/designer
-Name=Qt Master Stable - Designer
+Name=Qt Designer
 GenericName=Interface Designer
 MimeType=application/x-designer
 Icon=/usr/share/pixmaps/designer.png

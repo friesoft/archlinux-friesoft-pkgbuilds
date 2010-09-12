@@ -3,8 +3,8 @@
 # This package provides the master branch of Qt
 
 pkgname=qt-git
-pkgver=20100826
-pkgrel=2
+pkgver=20100912
+pkgrel=3
 pkgdesc="The C++ Qt GUI framework - current development snapshot (master branch)"
 arch=('i686' 'x86_64')
 url="http://www.qtsoftware.com"
@@ -21,10 +21,10 @@ options=('!libtool' 'docs')
 # desktop files and qdoc3 patch -- needed for qtdesigner-git build
 source=('assistant.desktop' 'designer.desktop' 'linguist.desktop' 'qtconfig.desktop')
 
-md5sums=('83d1fd8da6a350dc1f1459d0c8cd226b'
-         'bb1afccb14bcad7e7dac826612f5dc9c'
-         '038d7083823c2600c97239fe088b2f4b'
-         '8618e4b1875143fab8ad244688b2aae7')
+md5sums=('f11d6cde770349f4dce6590a89a28fe7'
+         '175d0abfff870af365833b4fa580b096'
+         '5c95ee417ef52a3dbdf87dc99e7a92bc'
+         'dc674175d534f3e072a8a7da59fa95d7')
 
 _gitroot="git://gitorious.org/qt/qt.git"
 _gitname="qt"
