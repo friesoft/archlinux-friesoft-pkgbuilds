@@ -1,65 +1,54 @@
-# $Id: PKGBUILD 73155 2010-03-23 10:23:39Z jgc $
-# Contributor: Jakub Schmidtke <sjakub@gmail.com>
-
+# Contributor: MutantMonkey <mutantmonkey@gmail.com>
 pkgname=firefox-qt-hg
-pkgver=40123
+pkgver=54362
 pkgrel=1
-_xulver=1.9.2.2
-pkgdesc="Standalone web browser from mozilla.org"
-arch=(i686 x86_64)
+_ffver="4.0b7pre"
+pkgdesc="Standalone web browser from mozilla.org, latest development version, Qt build"
+url="http://www.mozilla.org/projects/firefox/"
+arch=('i686' 'x86_64')
 license=('MPL' 'GPL' 'LGPL')
-depends=("xulrunner-qt=${_xulver}" 'desktop-file-utils')
-makedepends=('mercurial' 'zip' 'pkgconfig' 'diffutils' 'qt' 'python' 'wireless_tools')
-replaces=('firefox3')
-install=firefox.install
-url="http://www.mozilla.org/projects/firefox"
+depends=('qt' 'gcc-libs>=4.4.0' 'libidl2>=0.8.13' 'mozilla-common' 'nss>=3.12.3' 'nspr>=4.8' 'libxt' 'hunspell>=1.2.8' 'startup-notification>=0.10' 'pango>=1.24.0' 'desktop-file-utils' 'cairo>=1.8.0' 'libpng>=1.2.24-3' 'libjpeg' 'lcms' 'mesa' 'libproxy')
+makedepends=('mercurial' 'zip' 'pkgconfig' 'diffutils' 'imagemagick' 'python' 'xorg-server' 'autoconf2.13' 'libnotify' 'wireless_tools' 'yasm')
+optdepends=('libnotify' 'wireless_tools')
+provides=("firefox-qt=${_ffver}")
+install=firefox-qt.install
 source=(mozconfig
-        firefox-qt.desktop
-        firefox-qt-safe.desktop
-        mozilla-firefox-1.0-lang.patch
-        browser-defaulturls.patch
-        firefox-version.patch)
+        firefox-qt-hg.desktop
+        firefox-qt-hg-safe.desktop
+        firefox-qt.sh)
 
-md5sums=('c3a62a73278a069fff0f16e391f79670'
-         '55d930b5bec8778d222d0a7946bdd676'
-         'a2958ad90a26e16f66508d91b43d2683'
-         'bd5db57c23c72a02a489592644f18995'
-         '8bf21158090c89fd834bb711aae0602e'
-         '78b9b0bded64cff20a73d8a3ad3fc38b')
+md5sums=('b9292e457d2895b220501e6e9ecd7b7e'
+         'b6b994c510cc0a383f0834df63048e16'
+         '37f48f7fe970fb38de3a60d3d9ff6603'
+         'd7d3acc5e72e178330497c8baf70f436')
+sha256sums=('b6918c46a8261650c7e5a09dd6496e9066d5e986598d7047bc047909256cf243'
+            'd09f7446320d1e8719608de16e35ec82b93c93ae7738d837fecd0b5fe7f18bc4'
+            'c74a84f4be3e15713a670a3e8d17be2957f7131486d9d0543760bb7965cc3746'
+            '3b71510c80dab6f81458ab5edca0a7207fd22768a7b653e316b8fd49ba2b7086')
 
-_hgroot=http://hg.mozilla.org/mozilla-central
-_hgrepo=firefox
+_hgroot="http://hg.mozilla.org"
+_hgrepo=mozilla-central
 
 build() {
-  cd $srcdir
-
-  if [ -d $_hgrepo/.hg ]; then
-    (cd $_hgrepo && hg up -r $pkgver)
-  else
-    hg clone -r $pkgver $_hgroot/$_hgrepo $_hgrepo
-  fi
-
-  msg "Mercurial checkout done or server timeout"
-
-  cd "${srcdir}/${_hgrepo}"
-  patch -Np1 -i "${srcdir}/mozilla-firefox-1.0-lang.patch" || return 1
-  patch -Np0 -i "${srcdir}/browser-defaulturls.patch" || return 1
-  patch -Np1 -i "${srcdir}/firefox-version.patch" || return 1
-
-  cp "${srcdir}/mozconfig" .mozconfig
+  cd ${srcdir}/mozilla-central
+  cp ${srcdir}/mozconfig .mozconfig
+  
+  # update firefox-qt.sh launcher with proper Firefox version
+  sed -i "s/firefox-qt-hg/firefox-qt-${_ffver}/g" ${srcdir}/firefox-qt.sh
+  
   unset CFLAGS
   unset CXXFLAGS
+  export LDFLAGS="-Wl,-rpath,/usr/lib/firefox-qt-${_ffver}"
+  
+  make -f client.mk MOZ_MAKE_FLAGS="${MAKEFLAGS}" || return 1
+  make -C ff-opt-obj DESTDIR=${pkgdir} install || return 1
 
-  export LDFLAGS="-Wl,-rpath,/opt/ffqt/lib/firefox-3.6"
+  rm -f ${pkgdir}/usr/bin/firefox
+  install -m755 ${srcdir}/firefox-qt.sh ${pkgdir}/usr/bin/firefox-qt-hg || return 1
 
-  make -j1 -f client.mk build MOZ_MAKE_FLAGS="${MAKEFLAGS}" || return 1
-  make -j1 DESTDIR="${pkgdir}" install || return 1
-
-  rm -f ${pkgdir}/opt/ffqt/lib/firefox-3.6/libjemalloc.so
-
-  install -m755 -d ${pkgdir}/opt/ffqt/share/applications
-  install -m755 -d ${pkgdir}/opt/ffqt/share/pixmaps
-  install -m644 ${srcdir}/${_hgrepo}/browser/branding/unofficial/default48.png ${pkgdir}/opt/ffqt/share/pixmaps/firefox.png || return 1
-  install -m644 ${srcdir}/firefox-qt.desktop ${pkgdir}/opt/ffqt/share/applications/ || return 1
-  install -m644 ${srcdir}/firefox-qt-safe.desktop ${pkgdir}/opt/ffqt/share/applications/ || return 1
+  install -m755 -d ${pkgdir}/usr/share/applications
+  install -m755 -d ${pkgdir}/usr/share/pixmaps
+  install -m644 ${srcdir}/mozilla-central/browser/branding/nightly/default48.png ${pkgdir}/usr/share/pixmaps/firefox-qt-hg.png || return 1
+  install -m644 ${srcdir}/firefox-qt-hg.desktop ${pkgdir}/usr/share/applications/ || return 1
+  install -m644 ${srcdir}/firefox-qt-hg-safe.desktop ${pkgdir}/usr/share/applications/ || return 1
 }
