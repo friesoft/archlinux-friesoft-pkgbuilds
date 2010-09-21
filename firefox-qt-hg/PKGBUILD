@@ -1,14 +1,14 @@
 # Contributor: MutantMonkey <mutantmonkey@gmail.com>
 pkgname=firefox-qt-hg
 pkgver=54362
-pkgrel=1
+pkgrel=2
 _ffver="4.0b7pre"
 pkgdesc="Standalone web browser from mozilla.org, latest development version, Qt build"
 url="http://www.mozilla.org/projects/firefox/"
 arch=('i686' 'x86_64')
 license=('MPL' 'GPL' 'LGPL')
 depends=('qt' 'gcc-libs>=4.4.0' 'libidl2>=0.8.13' 'mozilla-common' 'nss>=3.12.3' 'nspr>=4.8' 'libxt' 'hunspell>=1.2.8' 'startup-notification>=0.10' 'pango>=1.24.0' 'desktop-file-utils' 'cairo>=1.8.0' 'libpng>=1.2.24-3' 'libjpeg' 'lcms' 'mesa' 'libproxy')
-makedepends=('mercurial' 'zip' 'pkgconfig' 'diffutils' 'imagemagick' 'python' 'xorg-server' 'autoconf2.13' 'libnotify' 'wireless_tools' 'yasm')
+makedepends=('mercurial' 'zip' 'diffutils' 'imagemagick' 'python' 'xorg-server' 'autoconf2.13' 'libnotify' 'wireless_tools' 'yasm')
 optdepends=('libnotify' 'wireless_tools')
 provides=("firefox-qt=${_ffver}")
 install=firefox-qt.install
