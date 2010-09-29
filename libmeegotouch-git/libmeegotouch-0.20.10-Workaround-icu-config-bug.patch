@@ -1,0 +1,19 @@
+From: Kaitlin Rupert <kaitlin.rupert@intel.com>
+Date: Thu, 20 May 2010
+Subject: Work around a bug in icu-config
+
+On MeeGo systems, icu-config --bindir returns /usr/sbin, when it should return
+/usr/bin.  See BMC #2342
+
+
+--- a/src/icu-extradata/icu-extradata.pro
++++ b/src/icu-extradata/icu-extradata.pro
+@@ -1,6 +1,7 @@
+ include($${M_BUILD_TREE}/mkspecs/features/meegotouch_defines.prf)
+ 
+-ICUBINDIR = $$system(icu-config --bindir)
++#ICUBINDIR = $$system(icu-config --bindir)
++ICUBINDIR = /usr/bin
+ ICUVERSION = $$system(icu-config --version)
+ ICUDATA = $$system(icu-config --icudata)      # for example “icudt44l”
+ ICUUSRDATA = $$replace(ICUDATA, icudt, usrdt) # for example “usrdt44l”

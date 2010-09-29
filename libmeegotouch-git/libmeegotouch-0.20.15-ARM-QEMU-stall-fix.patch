@@ -1,0 +1,19 @@
+--- a/configure
++++ b/configure
+@@ -402,10 +402,16 @@ if [ $? -eq 0 ]; then
+ 	HAVE_CONTENTACTION=no
+     fi
+ 
++    # For Scratchbox
+     if [ "$SBOX_UNAME_MACHINE" = "arm" ]; then
+         IS_ARMEL=yes
+     fi
+ 
++    # For OBS/MeeGo
++    if [ ! -z "`uname -m | grep arm`" ]; then   
++    	IS_ARMEL=yes  
++    fi      
++
+ fi
+ 
+ 

@@ -1,0 +1,53 @@
+From: Kaitlin Rupert <kaitlin.rupert@linux.intel.com>
+Date: Fri, 09 JuL 2010
+Subject: [PATCH] Re-enable code to set orientation
+
+This should be fixed upstream - see BMC #3844.
+
+Signed-off-by: Kaitlin Rupert <kaitlin.rupert@linux.intel.com>
+
+--- a/src/corelib/events/morientationtracker.cpp
++++ b/src/corelib/events/morientationtracker.cpp
+@@ -71,25 +71,23 @@ void MOrientationTrackerPrivate::topEdge
+     M::Orientation orientation = M::Landscape;
+     QString edge = topEdgeProperty.value().toString();
+ 
+-// Following code is diabled only temporarily
+-// Will probably by used again later.
+-//    if (edge == "top") {
+-//        angle = M::Angle0;
+-//    } else if (edge == "left") {
+-//        angle = M::Angle270;
+-//        orientation = M::Portrait;
+-//    } else if (edge == "right") {
+-//        //angle = M::Angle90; Disabled for now
+-//        angle = M::Angle270;
+-//        orientation = M::Portrait;
+-//    } else if (edge == "bottom") {
+-//        //angle = M::Angle180; Disabled for now
+-//        angle = M::Angle0;
+-//    } else {
+-//        angle = M::Angle0;
+-//    }
+-    angle = M::Angle270;
+-    orientation = M::Portrait;
++    if (edge == "top") {
++        angle = M::Angle0;
++    } else if (edge == "left") {
++        angle = M::Angle270;
++        orientation = M::Portrait;
++    } else if (edge == "right") {
++        //angle = M::Angle90; Disabled for now
++        angle = M::Angle270;
++        orientation = M::Portrait;
++    } else if (edge == "bottom") {
++        //angle = M::Angle180; Disabled for now
++        angle = M::Angle0;
++    } else {
++        angle = M::Angle0;
++    }
++//    angle = M::Angle270;
++//    orientation = M::Portrait;
+ 
+     // if hardware keyboard is opened, don't allow orientation angle to be changed.
+     if (angle != currentAngle

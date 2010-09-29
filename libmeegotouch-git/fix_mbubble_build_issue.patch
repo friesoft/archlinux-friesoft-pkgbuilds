@@ -1,0 +1,31 @@
+--- a/src/corelib/widgets/mbubbleitemmodel.h
++++ b/src/corelib/widgets/mbubbleitemmodel.h
+@@ -73,7 +73,7 @@ public:
+       \property MBubbleItemModel::type
+       \brief centralWidget.
+       */
+-    M_MODEL_PTR_PROPERTY(int, messageType, MessageType, true, NULL)
++    M_MODEL_PTR_PROPERTY(int, messageType, MessageType, true, 0)
+ 
+     /*!
+       \property MBubbleItemModel::commentsString
+--- a/src/views/mlistview_p.cpp
++++ b/src/views/mlistview_p.cpp
+@@ -47,7 +47,7 @@ MListViewPrivate::MListViewPrivate() : r
+     moving = false;
+     hseparator = NULL;
+     headersCreator = NULL;
+-    hdrHeight = NULL;
++    hdrHeight = 0;
+     forceRepaint = false;
+     viewportTopLeft = QPointF();
+     viewportVisibleHeight = 0;
+@@ -562,7 +562,7 @@ int MPlainListViewPrivate::totalHeight()
+ int MPlainListViewPrivate::itemsCount() const
+ {
+     if (model == 0)
+-        return NULL;
++        return 0;
+ 
+     return rowCount;
+ }

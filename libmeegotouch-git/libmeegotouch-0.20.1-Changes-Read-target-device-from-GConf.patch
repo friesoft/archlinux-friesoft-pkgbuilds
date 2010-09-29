@@ -1,0 +1,26 @@
+--- a/src/corelib/core/mcomponentdata.cpp
++++ b/src/corelib/core/mcomponentdata.cpp
+@@ -24,6 +24,9 @@
+ #include <qglobal.h>
+ #include <QInputContextFactory>
+ #include <QInputContext>
++#ifdef HAVE_GCONF
++#include <MGConfItem>
++#endif
+ 
+ #include "minputmethodstate.h"
+ #include "mtheme.h"
+@@ -313,6 +316,13 @@ void MComponentDataPrivate::init(int &ar
+     deviceName = "N900";
+ #endif //HAVE_N900
+ 
++#ifdef HAVE_GCONF
++    // If set, read default deviceName (aka "--target") from GConf
++    // TODO: Create/install schema file to set sane defaults
++    MGConfItem targetDevice("/meegotouch/theme/target");
++    deviceName = targetDevice.value("").toString();
++#endif
++
+     // Assume every argument is used and mark those that are not
+     QVector<bool> usedArguments(argc, true);
+ 

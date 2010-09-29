@@ -1,0 +1,13 @@
+Description: fix ftbfs on ARM when using EGL (when the macro is defined,
+             X11 headers will not be included)
+Author: Carsten Valdemar Munk <carsten@maemo.org>
+--- a/demos/widgetsgallery/swaphook.h
++++ b/demos/widgetsgallery/swaphook.h
+@@ -6,6 +6,7 @@ typedef unsigned long long timestamp;
+ 
+ #ifdef __arm__
+ #define EGL
++#define MESA_EGL_NO_X11_HEADERS
+ #include <EGL/egl.h>
+ #   ifdef HAVE_N900
+ #       define EGLAPI

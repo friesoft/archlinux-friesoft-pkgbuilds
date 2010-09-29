@@ -1,0 +1,73 @@
+Description: fix ftbfs by reorder includes (error: #error qtextstream.h must be
+included before any header file that defines Status)
+Author: Fathi Boudra <fathi.boudra@nokia.com>
+--- a/demos/widgetsgallery/panningbenchmark.cpp
++++ b/demos/widgetsgallery/panningbenchmark.cpp
+@@ -1,14 +1,13 @@
+-#include "panningbenchmark.h"
+-#include "timedemo.h"
++#include <QDebug>
++#include <QTimer>
+ 
+ #include <MApplication>
+ #include <MApplicationPage>
+ #include <MPannableViewport>
+ #include <MPhysics2DPanning>
+ 
+-#include <QTimer>
+-#include <qdebug.h>
+-
++#include "panningbenchmark.h"
++#include "timedemo.h"
+ 
+ namespace {
+     const int updateInterval = 20; // ms
+--- a/demos/widgetsgallery/timedemo.cpp
++++ b/demos/widgetsgallery/timedemo.cpp
+@@ -17,21 +17,21 @@
+ **
+ ****************************************************************************/
+ 
+-#include "timedemo.h"
+-#include "mainpage.h"
+-#include "timedemobenchmark.h"
+-#include "templatepage.h"
++#include <QApplication>
++#include <QFile>
++#include <QTextStream>
++#include <QTimer>
++#include <QXmlStreamWriter>
+ 
+ #include <MApplication>
+ #include <MWindow>
+ #include <MSceneManager>
+ #include <MApplicationPage>
+ 
+-#include <QApplication>
+-#include <QTextStream>
+-#include <QXmlStreamWriter>
+-#include <QFile>
+-#include <QTimer>
++#include "timedemo.h"
++#include "mainpage.h"
++#include "timedemobenchmark.h"
++#include "templatepage.h"
+ 
+ namespace
+ {
+--- a/demos/widgetsgallery/staticpagebenchmark.cpp
++++ b/demos/widgetsgallery/staticpagebenchmark.cpp
+@@ -1,10 +1,10 @@
+-#include "staticpagebenchmark.h"
+-#include "timedemo.h"
++#include <QTimer>
+ 
+ #include <MApplication>
+ #include <MApplicationPage>
+ 
+-#include <QTimer>
++#include "staticpagebenchmark.h"
++#include "timedemo.h"
+ 
+ namespace
+ {

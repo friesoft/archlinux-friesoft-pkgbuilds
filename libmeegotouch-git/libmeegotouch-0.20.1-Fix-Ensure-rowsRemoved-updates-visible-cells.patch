@@ -1,0 +1,25 @@
+--- a/src/views/mlistview.cpp
++++ b/src/views/mlistview.cpp
+@@ -222,6 +222,13 @@ void MListView::dataChanged(const QModel
+     int topLeftRow = d_ptr->indexToFlatRow(topLeft);
+     int bottomRightRow = d_ptr->indexToFlatRow(bottomRight);
+ 
++    // When/if the bottomRight index is invalid, must use index of last valid
++    // row rather than -1 (which is what indexToFlatRow() will return.  This
++    // happens when rows are removed from the source model and fewer items
++    // remain than there are visible rows.
++    if (!bottomRight.isValid())
++        bottomRightRow = model()->itemModel()->rowCount() - 1;
++
+     int top = qMax(topLeftRow, firstVisibleRow);
+     int lastCellInLastVisibleRow = lastVisibleRow + model()->columns() - lastVisibleRow % model()->columns() - 1;
+     int bottom = qMin(bottomRightRow, lastCellInLastVisibleRow);
+@@ -263,6 +270,8 @@ void MListView::rowsRemoved(const QModel
+     Q_UNUSED(start);
+     Q_UNUSED(end);
+     Q_UNUSED(animated);
++    // updateGeometry adjusts container scroll bars and reposition cells
++    updateGeometry();
+ 
+     layoutChanged();
+ }

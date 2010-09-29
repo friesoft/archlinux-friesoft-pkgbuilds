@@ -1,0 +1,11 @@
+--- a/src/corelib/i18n/mlocale.cpp
++++ b/src/corelib/i18n/mlocale.cpp
+@@ -749,7 +749,7 @@ void MLocalePrivate::removeTrFromQCoreAp
+     }
+ }
+ 
+-QLocale::QLocale MLocalePrivate::createQLocale(MLocale::Category category) const
++QLocale MLocalePrivate::createQLocale(MLocale::Category category) const
+ {
+     Q_Q(const MLocale);
+     QLocale qlocale(q->categoryLanguage(category)

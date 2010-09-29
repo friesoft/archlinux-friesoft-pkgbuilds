@@ -1,0 +1,177 @@
+From d7e83d1066d366a0f7b73664d6e232437e8c20f2 Mon Sep 17 00:00:00 2001
+From: James Ketrenos <jketreno@linux.intel.com>
+Date: Tue, 15 Jun 2010 12:57:35 -0700
+Subject: [PATCH] Revert c90025d6bde5184346d8bbe148effd47aef354af Fixes: NB#171256 - Multiple windows of the same application should share the same GL context
+
+On Aava, this patch results in application windows turning white when switching back
+to the home screen.
+----
+Fixes: NB#171256 - Multiple windows of the same application should share the same GL context
+
+    RevBy: Tomas Junnonen
+    Details: createNewGlWidget use cache of shareWidget for each format requested.
+    When another QGLWidget is requested it shares OpenGL display lists and texture objects
+    with previously created QGLWidget with the same format.
+
+Signed-off-by: James Ketrenos <jketreno@linux.intel.com>
+---
+ src/corelib/core/mcomponentcache.cpp |   52 ++++++----------------------------
+ src/corelib/core/mcomponentcache.h   |    2 -
+ src/corelib/core/mcomponentcache_p.h |   10 +-----
+ src/corelib/widgets/mwindow.cpp      |    2 +-
+ 4 files changed, 12 insertions(+), 54 deletions(-)
+
+--- a/src/corelib/core/mcomponentcache.cpp
++++ b/src/corelib/core/mcomponentcache.cpp
+@@ -52,11 +52,6 @@ MComponentCachePrivate::~MComponentCache
+         delete glWidgetOfOtherWindow;
+     if (mApplicationWindowInstance != 0)
+         delete mApplicationWindowInstance;
+-
+-    while (!shareWidgetsCache.isEmpty()) {
+-        FormatWidgetPair pair = shareWidgetsCache.takeFirst();
+-        delete pair.second;
+-    }
+ }
+ 
+ bool MComponentCachePrivate::populating()
+@@ -86,33 +81,13 @@ void MComponentCachePrivate::populateFor
+     cacheBeingPopulated = false;
+ }
+ 
+-QGLWidget* MComponentCachePrivate::createNewGlWidget(const QGLFormat* format)
++QGLWidget* MComponentCachePrivate::createNewGlWidget()
+ {
+     QGLFormat fmt;
+-
+-    if (!format) {
+-        // disable multisampling, is enabled by default in Qt
+-        fmt.setSampleBuffers(false);
+-        fmt.setSamples(0);
+-    }
+-    else {
+-        fmt = *format;
+-    }
+-
+-    QGLWidget* shareWidget = NULL;
+-    foreach(FormatWidgetPair pair, shareWidgetsCache) {
+-        if (pair.first == fmt)  {
+-            shareWidget = pair.second;
+-            break;
+-        }
+-    }
+-
+-    if (!shareWidget) {
+-       shareWidget = new QGLWidget(fmt);
+-       shareWidgetsCache.append(qMakePair(fmt, shareWidget));
+-    }
+-
+-    return new QGLWidget(fmt, NULL, shareWidget);
++    // disable multisampling, is enabled by default in Qt                                                                                          
++    fmt.setSampleBuffers(false);
++    fmt.setSamples(0);
++    return new QGLWidget(fmt);
+ }
+ 
+ MApplication* MComponentCachePrivate::mApplication(int &argc, char **argv, const QString &appIdentifier, MApplicationService *service)
+@@ -224,21 +199,17 @@ MApplicationWindow* MComponentCachePriva
+     return returnValue;
+ }
+ 
+-QGLWidget* MComponentCachePrivate::glWidget(const QGLFormat* format)
++QGLWidget* MComponentCachePrivate::glWidget()
+ {
+     QGLWidget *returnValue;
+-    if (cacheBeingPopulated && glWidgetOfmApplicationWindowInstance != 0
+-        && (!format || glWidgetOfmApplicationWindowInstance->format() == *format))
+-    {
++    if (cacheBeingPopulated && glWidgetOfmApplicationWindowInstance != 0) {
+         returnValue = glWidgetOfmApplicationWindowInstance;
+         glWidgetOfmApplicationWindowInstance = 0;
+-    } else if (glWidgetOfOtherWindow != 0
+-               && (!format || glWidgetOfOtherWindow->format() == *format))
+-    {
++    } else if (glWidgetOfOtherWindow != 0) {
+         returnValue = glWidgetOfOtherWindow;
+         glWidgetOfOtherWindow = 0;
+     } else {
+-        returnValue = createNewGlWidget(format);
++        returnValue = createNewGlWidget();
+     }
+     return returnValue;
+ }
+@@ -271,8 +242,3 @@ QGLWidget* MComponentCache::glWidget()
+ {
+     return d_ptr->glWidget();
+ }
+-
+-QGLWidget* MComponentCache::glWidget(const QGLFormat& format)
+-{
+-    return d_ptr->glWidget(&format);
+-}
+--- a/src/corelib/core/mcomponentcache.h
++++ b/src/corelib/core/mcomponentcache.h
+@@ -28,7 +28,6 @@ class MApplication;
+ class MApplicationWindow;
+ class MApplicationService;
+ class QGLWidget;
+-class QGLFormat;
+ class MComponentCachePrivate;
+ 
+ /*!
+@@ -95,7 +94,6 @@ private:
+ 
+     /* QGLWidget object returned by glWidget is owned by the caller */
+     static QGLWidget* glWidget();
+-    static QGLWidget* glWidget(const QGLFormat& format);
+     friend class MApplicationWindow; 
+     friend class MWindowPrivate;
+ 
+--- a/src/corelib/core/mcomponentcache_p.h
++++ b/src/corelib/core/mcomponentcache_p.h
+@@ -20,9 +20,6 @@
+ #ifndef MCOMPONENTCACHE_P_H
+ #define MCOMPONENTCACHE_P_H
+ 
+-#include <QList>
+-#include <QPair>
+-
+ class MComponentCache;
+ class MApplication;
+ class MApplicationWindow;
+@@ -37,12 +34,12 @@ public:
+     bool populating();
+     MApplication* mApplication(int &argc, char **argv, const QString &appIdentifier, MApplicationService *service);
+     MApplicationWindow* mApplicationWindow();
+-    QGLWidget* glWidget(const QGLFormat* format = NULL);
++    QGLWidget* glWidget();
+ 
+     bool canUseCachedApp(int &argc, char **argv, const QString &appIdentifier);
+     bool hasExtraParams(int &argc, char **argv, const QString &appIdentifier);
+ 
+-    QGLWidget* createNewGlWidget(const QGLFormat* format = NULL);
++    static QGLWidget* createNewGlWidget();
+ 
+ private:
+     MApplication *mApplicationInstance;
+@@ -51,9 +48,6 @@ private:
+     QGLWidget *glWidgetOfOtherWindow;
+     bool cacheBeingPopulated;
+ 
+-    typedef QPair<QGLFormat,QGLWidget*> FormatWidgetPair;
+-    QList<FormatWidgetPair> shareWidgetsCache;
+-
+ #ifdef UNIT_TEST
+     friend class Ut_MComponentCache;
+ #endif
+--- a/src/corelib/widgets/mwindow.cpp
++++ b/src/corelib/widgets/mwindow.cpp
+@@ -184,7 +184,7 @@ void MWindowPrivate::initGLViewport()
+         fmt.setSamples(0);
+         fmt.setAlpha(true); // Workaround for NB#153625
+ 
+-        glWidget = MComponentCache::glWidget(fmt);
++        glWidget = new QGLWidget(fmt);
+         QPalette palette;
+         palette.setColor(QPalette::Base, Qt::transparent);
+         glWidget->setAutoFillBackground(true);

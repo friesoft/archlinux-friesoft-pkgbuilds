@@ -1,0 +1,48 @@
+--- a/src/data/devices.conf
++++ b/src/data/devices.conf
+@@ -47,3 +47,45 @@ ppiX=209
+ ppiY=209
+ showStatusBar=false	
+ 
++[mbook]
++resolutionX=1024 
++resolutionY=570
++ppiX=248
++ppiY=248
++ 
++[jax10]
++resolutionX=800
++resolutionY=460
++ppiX=192
++ppiY=192
++ 
++[dellmini]
++resolutionX=1280
++resolutionY=780
++ppiX=125
++ppiY=125
++
++[eero]
++resolutionX=1280
++resolutionY=720
++ppiX=120
++ppiY=120
++
++[aava]
++resolutionX=864
++resolutionY=480
++ppiX=256
++ppiY=256
++showStatusBar=true
++
++[russelville]
++resolutionX=704
++resolutionY=480
++ppiX=345
++ppiY=345
++
++[slate]
++resolutionX=1024
++resolutionY=600
++ppiX=261
++ppiY=261

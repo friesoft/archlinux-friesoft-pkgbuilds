@@ -1,21 +1,51 @@
 # Contributor: Bernhard Friedreich <friesoft@gmail.com>
 
 pkgname=libmeegotouch-git
-pkgver=20100814
+pkgver=20100924
 pkgrel=1
 
-pkgdesc="Meego Touch framework based on Qt graphicsview"
+pkgdesc="Qt based MeeGo Touch Framework for developing touch based user interfaces"
 url="http://meego.gitorious.org/meegotouch/libmeegotouch"
-license=('GPL')
+license=('LGPL')
 arch=('i686' 'x86_64')
-depends=('qt>=4.7')
+depends=('qt>=4.7' 'meegotouch-theme-git' 'gstreamer0.10' 'gstreamer0.10-base' 'gstreamer0.10-base-plugins' 'dbus' 'libxdamage' 'icu' 'libx11' 'gconf')
 makedepends=('git')
 
-provides=( "libmeegotouch-git=${pkgver}" "libmeegotouch=${pkgver}" )
-conflicts=( "libmeegotouch" )
+provides=( "libmeegotouch-git=${pkgver}" "libmeegotouch=${pkgver}" 'libdui-git' 'libdui')
+conflicts=( "libmeegotouch" 'libdui')
+
+install=('libmeegotouch-git.install')
 
 _gitroot="git://gitorious.org/meegotouch/libmeegotouch.git"
 _gitname="libmeegotouch-git"
+
+source=('libmeegotouch-0.20.1-Changes-Read-target-device-from-GConf.patch'
+        'libmeegotouch-0.20.1-Fix-Ensure-rowsRemoved-updates-visible-cells.patch'
+        'libmeegotouch-0.20.1-ARMv5-build-failure.patch'
+        'libmeegotouch-0.20.1-Add-various-devices-to-device-conf.patch'
+        'libmeegotouch-0.20.10-Workaround-icu-config-bug.patch'
+        'libmeegotouch-0.20.10-missing-Epoch-function.patch'
+        'libmeegotouch-0.20.15-Revert-c90025d6bde5184346d8bbe148effd47aef354af-Fixe.patch'
+        'libmeegotouch-0.20.15-ARM-QEMU-stall-fix.patch'
+        'fix_locale_build_issue.patch'
+        'fix_mbubble_build_issue.patch'
+        're-enable_code_to_set_orientation.patch'
+        'include_order.patch'
+        'arm_ftbfs_egl.patch')
+
+md5sums=('2ebe85dd259ec33b498c98a28c2a9bef'
+         '89d234852a569403006cb2fafbcc3d58'
+         '02bbce68e070c6652ce7c83c73e7ae03'
+         '0d1092031b8e4ada106468f194e604cf'
+         'b06bf2efe91826c4f0b59b5b262c2018'
+         '5cc84946dc0954389382a1e31408d816'
+         '1cd0d2c64b8d99d5b2e69bfd4be797ae'
+         '1bf2181d4f2d66fee3e1a3bb6af97bbc'
+         'b35f70a365b11b7675f54e481cbb2ff8'
+         '40d05a1477ce65828c2876e16c8f24e6'
+         'dc832ca6ccdaebaaef23cc53aec52878'
+         'bded427a89301fdfae2130a4c8ee6e6a'
+         '620d76c8839f01fe1940e0d6b7dc8cf6')
 
 build() {
     # Export the include dir
@@ -25,54 +55,70 @@ build() {
     msg "Connecting to the GIT server..."
     if [ -d ${_gitname}/.git ]; then
         cd ${_gitname}
-        git pull
+        git reset --hard HEAD
+        git pull origin
     else
         git clone ${_gitroot} ${_gitname}
         cd ${_gitname}
     fi
 
+    echo "patch1"
+    patch -Np1 -i ${srcdir}/libmeegotouch-0.20.1-Changes-Read-target-device-from-GConf.patch
+    #echo "patch2"
+    #patch -Np1 -i ${srcdir}/libmeegotouch-0.20.1-Fix-Ensure-rowsRemoved-updates-visible-cells.patch
+    #echo "patch3"
+    #patch -Np1 -i ${srcdir}/libmeegotouch-0.20.1-ARMv5-build-failure.patch
+    #echo "patch4"
+    #patch -Np1 -i ${srcdir}/libmeegotouch-0.20.1-Add-various-devices-to-device-conf.patch
+    echo "patch5"
+    patch -Np1 -i ${srcdir}/libmeegotouch-0.20.10-Workaround-icu-config-bug.patch
+    #echo "patch6"
+    #patch -Np1 -i ${srcdir}/libmeegotouch-0.20.10-missing-Epoch-function.patch
+    #echo "patch7"
+    #patch -Np1 -i ${srcdir}/libmeegotouch-0.20.15-Revert-c90025d6bde5184346d8bbe148effd47aef354af-Fixe.patch
+    #echo "patch8"
+    #patch -Np1 -i ${srcdir}/libmeegotouch-0.20.15-ARM-QEMU-stall-fix.patch
+    #echo "patch9"
+    #patch -Np1 -i ${srcdir}/fix_locale_build_issue.patch
+    #echo "patch10"
+    #patch -Np1 -i ${srcdir}/fix_mbubble_build_issue.patch
+    #echo "patch11"
+    #patch -Np1 -i ${srcdir}/re-enable_code_to_set_orientation.patch
+    echo "patch12"
+    patch -Np1 -i ${srcdir}/include_order.patch
+    echo "patch13"
+    patch -Np1 -i ${srcdir}/arm_ftbfs_egl.patch
+
     ./configure -prefix /usr \
-                -libdir /usr/lib
+                -libdir /usr/lib \
+                -plainqt \
+                -release
     make || return 1
+
     export GCONF_DISABLE_MAKEFILE_SCHEMA_INSTALL=1
     make INSTALL_ROOT=$pkgdir install || return 1
 
 
-mkdir -p $pkgdir/etc/profile.d
-echo "export M_DECORATED=0" > ${pkgdir}/etc/profile.d/libmeegotouch.sh
+    mkdir -p $pkgdir/etc/profile.d
+    echo "export M_DECORATED=0" > ${pkgdir}/etc/profile.d/libmeegotouch.sh
 
-GCONF_CONFIG_SOURCE=`gconftool-2 --get-default-source`
-gconftool-2 --direct --config-source ${GCONF_CONFIG_SOURCE}  --makefile-install-rule src/meegotouch.schemas
+    GCONF_CONFIG_SOURCE=`gconftool-2 --get-default-source`
+    gconftool-2 --direct --config-source ${GCONF_CONFIG_SOURCE}  --makefile-install-rule src/meegotouch.schemas
 
-#Fix rpmlint errors - some header files have invalid permissions
-chmod 644 ${pkgdir}/usr/include/meegotouch/mrichtexteditstyle.h
-chmod 644 ${pkgdir}/usr/include/meegotouch/mrichtextedit.h
+    #Fix rpmlint errors - some header files have invalid permissions
+    chmod 644 ${pkgdir}/usr/include/meegotouch/mrichtexteditstyle.h
+    chmod 644 ${pkgdir}/usr/include/meegotouch/mrichtextedit.h
 
+    # Pre-create and chmod the mthemedaemon cache dir
+    mkdir -p ${pkgdir}/var/cache/meegotouch
 
-#desktop-file-install --delete-original       \
-#  --dir ${pkgdir}/usr/share/applications             \
-#   ${pkgdir}/usr/share/applications/*
-#
-# if [ "$1" -gt 1 ]; then
-#   export GCONF_CONFIG_SOURCE=`gconftool-2 --get-default-source`
-#   gconftool-2 --makefile-uninstall-rule \
-#     /etc/gconf/schemas/meegotouch.schemas \
-#     > /dev/null || :
-# fi
-#
-# if [ "$1" -eq 0 ]; then
-#   export GCONF_CONFIG_SOURCE=`gconftool-2 --get-default-source`
-#   gconftool-2 --makefile-uninstall-rule \
-#     /etc/gconf/schemas/meegotouch.schemas \
-#     > /dev/null || :
-# fi
-#
-# /sbin/ldconfig
-# export GCONF_CONFIG_SOURCE=`gconftool-2 --get-default-source`
-# gconftool-2 --makefile-install-rule \
-#     /etc/gconf/schemas/meegotouch.schemas  > /dev/null || :
-# update-desktop-database /usr/share/applications &> /dev/null || :
-#
-# /sbin/ldconfig
-# update-desktop-database /usr/share/applications &> /dev/null || :
+    # Remove known zero-length files
+    rm ${pkgdir}/usr/share/qtstyleexample/themes/style/qtstyleexample.css
+    rm ${pkgdir}/usr/share/animatedlayout/themes/animatedlayout.conf
+    rm ${pkgdir}/usr/share/themes/base/meegotouch/widgetsgallery/feedbacks/press-babytoy/vibra.ivt
+    rm ${pkgdir}/usr/share/themes/base/meegotouch/widgetsgallery/feedbacks/release-space/vibra.ivt
+    #rm ${pkgdir}/usr/share/themes/devel/meegotouch/widgetsgallery/style/widgetsgallery.css
+    rm ${pkgdir}/usr/share/themes/base/meegotouch/widgetsgallery/widgetsgallery.conf
+    rm ${pkgdir}/usr/share/themes/base/meegotouch/widgetsgallery/feedbacks/press-space/vibra.ivt
+    rm ${pkgdir}/usr/share/themes/base/meegotouch/widgetsgallery/feedbacks/release-babytoy/vibra.ivt
 }

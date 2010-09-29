@@ -1,7 +1,7 @@
 # Contributor: Bernhard Friedreich <friesoft@gmail.com>
 
 pkgname=meegotouch-theme-git
-pkgver=20100814
+pkgver=20100924
 pkgrel=1
 
 pkgdesc=""
