@@ -1,0 +1,35 @@
+# Contributor: Bernhard Friedreich <friesoft@gmail.com>
+
+pkgname=qt-symbian-47
+pkgver=4.7.0
+pkgrel=1
+pkgdesc="Qt for symbian 4.7"
+url="http://lizardo.wordpress.com/2010/10/11/qt-4-7-0-for-symbian-on-linux-now-with-qt-creator-support/"
+license=('GPL')
+arch=('i686' 'x86_64')
+depends=('wine' 'zlib' 'openssl' 'gnupoc')
+[ "$CARCH" == "x86_64" ] && depends=('bin32-wine' 'zlib' 'openssl')
+conflicts=('gnupoc-s60-5.0')
+provides=('gnupoc-s60-5.0=1.17' 'qt-symbian=4.7.0')
+install=qt-symbian-47.install
+
+build() {
+  cd $srcdir
+
+   if [ -d downloads ]; then
+    cd downloads
+  else
+    mkdir downloads
+    cd downloads
+  fi
+
+  wget -c http://www.codesourcery.com/public/gnu_toolchain/arm-none-symbianelf/gnu-csl-arm-2005Q1C-arm-none-symbianelf-i686-pc-linux-gnu.tar.bz2
+  wget -c http://www.martin.st/symbian/gnupoc-package-1.17.tar.gz
+  wget -c http://get.qt.nokia.com/qt/source/qt-symbian-opensource-4.7.0-s60.exe
+  wget -c -O S60_5th_Edition_SDK_v1_0_en.zip http://sw.nokia.com/id/577ad48d-290c-4bb5-8bdf-779ea8a5bc6c/S60_5th_Edition_SDK_v1_0_en.zip
+  wget -c -O s60_open_c_cpp_plug_in_v1_7_en.zip http://www.qdrive.net/index.php/page-file_share-choice-download_file-id_file-181614-ce-0
+  wget -c http://franciscoalecrim.com/lizardo/qt_for_symbian_4.7.0_linux_installer_v4.sh
+
+  chmod +x qt_for_symbian_4.7.0_linux_installer_v4.sh
+  ./qt_for_symbian_4.7.0_linux_installer_v4.sh $srcdir/downloads $pkgdir/opt/qt470symbian
+}

@@ -2,18 +2,18 @@
 # http://packages.debian.org/de/lenny-backports/xen-tools
 
 pkgname=xen-tools
-pkgver=4.1
+pkgver=4.2
 pkgrel=1
 pkgdesc="xen-tools is a collection of simple perl scripts which allow you to easily create new guest Xen domains"
 arch=('i686' 'x86_64')
 license=('GPL')
 url="http://www.xen-tools.org/software/xen-tools/"
 depends=()
-source=("http://www.backports.org/debian/pool/main/x/xen-tools/xen-tools_4.1-1~bpo50+1_all.deb") 
-md5sums=('d5e9d0337499e92bda0aaa6c16bc8e53')
+source=("http://ftp.us.debian.org/debian/pool/main/x/xen-tools/xen-tools_4.2-1_all.deb")
+md5sums=('e315aad0528784350134b0b517b70649')
 
 build() {
-  ar x ${pkgname}_${pkgver}-${pkgrel}~bpo50+1_all.deb
+  ar x ${pkgname}_${pkgver}-${pkgrel}_all.deb
   tar xzf data.tar.gz -C $startdir/pkg
 }
 
